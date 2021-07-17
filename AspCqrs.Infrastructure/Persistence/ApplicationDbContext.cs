@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +15,13 @@ namespace AspCqrs.Infrastructure.Persistence
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>,
         IApplicationDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        private readonly IDomainEventService _domainEventService;
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
+            IDomainEventService domainEventService)
             : base(options)
         {
+            _domainEventService = domainEventService;
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
@@ -38,7 +43,11 @@ namespace AspCqrs.Infrastructure.Persistence
                 }
             }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            await DispatchEvents();
+
+            return result;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -46,6 +55,24 @@ namespace AspCqrs.Infrastructure.Persistence
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             
             base.OnModelCreating(builder);
+        }
+
+        private async Task DispatchEvents()
+        {
+            while (true)
+            {
+                var domainEventEntity = ChangeTracker
+                    .Entries<IHasDomainEvent>()
+                    .Select(x => x.Entity.DomainEvents)
+                    .SelectMany(x => x)
+                    .FirstOrDefault(domainEvent => !domainEvent.IsPublished);
+                
+                if (domainEventEntity == null) break;
+
+                domainEventEntity.IsPublished = true;
+                
+                await _domainEventService.Publish(domainEventEntity);
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Mapping;
 using AspCqrs.Domain.Entities;
+using AspCqrs.Domain.Events;
 using AutoMapper;
 using MediatR;
 
@@ -32,6 +34,8 @@ namespace AspCqrs.Application.TodoItems.Commands
         public async Task<TodoItemDto> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
+            
+            todoItem.DomainEvents.Add(new TodoItemCreatedEvent(todoItem));
 
             _dbContext.TodoItems.Add(todoItem);
 

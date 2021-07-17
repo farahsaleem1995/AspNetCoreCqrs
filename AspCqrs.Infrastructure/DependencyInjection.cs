@@ -3,6 +3,7 @@ using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Users.Commands;
 using AspCqrs.Infrastructure.Identity;
 using AspCqrs.Infrastructure.Persistence;
+using AspCqrs.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -45,8 +46,8 @@ namespace AspCqrs.Infrastructure
             });
             
             services.AddScoped<IIdentityService, IdentityService>();
-            
-            services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddScoped<IDomainEventService, DomainEventService>();
 
             services.AddMediatR(typeof(RegisterCommandHandler));
         }

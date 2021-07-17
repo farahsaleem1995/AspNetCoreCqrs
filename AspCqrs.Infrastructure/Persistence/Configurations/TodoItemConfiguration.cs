@@ -14,6 +14,8 @@ namespace AspCqrs.Infrastructure.Persistence.Configurations
 
             builder.Property(entity => entity.Priority)
                 .HasConversion<string>();
+
+            builder.Ignore(entity => entity.DomainEvents);
         }
     }
 }
