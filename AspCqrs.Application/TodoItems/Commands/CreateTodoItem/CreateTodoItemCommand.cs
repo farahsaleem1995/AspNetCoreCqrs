@@ -10,7 +10,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspCqrs.Application.TodoItems.Commands
+namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 {
     public class CreateTodoItemCommand : IRequest<TodoItemDto>, IMapTo<TodoItem>
     {

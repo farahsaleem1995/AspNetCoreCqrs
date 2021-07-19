@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace AspCqrs.Application.TodoItems.Commands
+namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 {
     public class CreateTodoItemCommandValidator : AbstractValidator<CreateTodoItemCommand>
     {
