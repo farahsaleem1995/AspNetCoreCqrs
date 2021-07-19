@@ -1,3 +1,4 @@
+using System;
 using AspCqrs.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -5,6 +6,10 @@ namespace AspCqrs.Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser
     {
-        public User User { get; set; }
+        public DomainUser User { get; set; }
+        
+        public DateTime Created { get; set; }
+        
+        public DateTime? LastModified { get; set; }
     }
 }

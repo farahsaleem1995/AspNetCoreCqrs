@@ -1,6 +1,8 @@
+using AspCqrs.Domain.Common;
+
 namespace AspCqrs.Domain.Entities
 {
-    public class User
+    public class DomainUser : AuditableEntity
     {
         public string Id { get; set; }
         

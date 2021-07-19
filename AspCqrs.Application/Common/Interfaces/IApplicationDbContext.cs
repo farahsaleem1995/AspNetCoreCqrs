@@ -9,7 +9,7 @@ namespace AspCqrs.Application.Common.Interfaces
     {
         DbSet<TodoItem> TodoItems { get; set; }
         
-        DbSet<User> DomainUsers { get; set; }
+        DbSet<DomainUser> DomainUsers { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

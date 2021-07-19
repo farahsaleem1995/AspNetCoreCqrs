@@ -4,7 +4,7 @@ using AspCqrs.Domain.Entities;
 
 namespace AspCqrs.Application.Users
 {
-    public class UserDto : IMapFrom<User>
+    public class UserDto : IMapFrom<DomainUser>
     {
         public string Id { get; set; }
         

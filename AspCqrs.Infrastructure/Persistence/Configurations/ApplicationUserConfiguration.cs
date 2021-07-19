@@ -9,11 +9,19 @@ namespace AspCqrs.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.Property(entity => entity.UserName).HasColumnName(nameof(ApplicationUser.UserName));
+            builder.Property(entity => entity.UserName)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName(nameof(ApplicationUser.UserName));
+            
+            builder.Property(entity => entity.Created)
+                .HasColumnName(nameof(ApplicationUser.Created));
+            
+            builder.Property(entity => entity.LastModified)
+                .HasColumnName(nameof(ApplicationUser.LastModified));
 
             builder.HasOne(entity => entity.User)
                 .WithOne()
-                .HasForeignKey<User>(entity => entity.Id);
+                .HasForeignKey<DomainUser>(entity => entity.Id);
 
             builder.ToTable("AspNetUsers");
         }

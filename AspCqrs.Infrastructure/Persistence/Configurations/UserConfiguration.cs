@@ -4,12 +4,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AspCqrs.Infrastructure.Persistence.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<DomainUser>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<DomainUser> builder)
         {
-            builder.Property(entity => entity.UserName).HasColumnName(nameof(User.UserName));
+            builder.Property(entity => entity.UserName)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName(nameof(DomainUser.UserName));
             
+            builder.Property(entity => entity.Created)
+                .HasColumnName(nameof(DomainUser.Created));
+            
+            builder.Property(entity => entity.LastModified)
+                .HasColumnName(nameof(DomainUser.LastModified));
+
             builder.ToTable("AspNetUsers");
         }
     }

@@ -16,7 +16,7 @@ namespace AspCqrs.Domain.Entities
 
         public string UserId { get; set; }
 
-        public User User { get; set; }
+        public DomainUser User { get; set; }
         
         public List<DomainEvent> DomainEvents { get; set; } = new List<DomainEvent>();
     }

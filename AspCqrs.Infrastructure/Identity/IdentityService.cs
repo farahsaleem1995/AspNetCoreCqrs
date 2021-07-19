@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
@@ -27,7 +28,8 @@ namespace AspCqrs.Infrastructure.Identity
             var user = new ApplicationUser
             {
                 UserName = username,
-                Email = username
+                Email = username,
+                Created = DateTime.UtcNow,
             };
 
             var result = await _userManager.CreateAsync(user, password);
