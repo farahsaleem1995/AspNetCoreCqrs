@@ -7,6 +7,7 @@ using AspCqrs.Domain.Entities;
 using AspCqrs.Domain.Events;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands
 {
@@ -17,6 +18,8 @@ namespace AspCqrs.Application.TodoItems.Commands
         public string Note { get; set; }
         
         public int Priority { get; set; }
+
+        public string UserId { get; set; }
     }
     
     public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, TodoItemDto>
@@ -33,6 +36,9 @@ namespace AspCqrs.Application.TodoItems.Commands
 
         public async Task<TodoItemDto> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
+            var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
+            if (user == null) throw new Exception($"User \"{request.UserId}\" not found.");
+            
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
             
             todoItem.DomainEvents.Add(new TodoItemCreatedEvent(todoItem));

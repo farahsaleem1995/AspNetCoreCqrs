@@ -8,6 +8,8 @@ namespace AspCqrs.Application.Common.Interfaces
     public interface IApplicationDbContext
     {
         DbSet<TodoItem> TodoItems { get; set; }
+        
+        DbSet<User> DomainUsers { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

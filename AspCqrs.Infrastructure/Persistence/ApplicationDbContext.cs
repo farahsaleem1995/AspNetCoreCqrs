@@ -25,6 +25,8 @@ namespace AspCqrs.Infrastructure.Persistence
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
+        
+        public DbSet<User> DomainUsers { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

@@ -1,5 +1,6 @@
 using AspCqrs.Application.Common;
 using AspCqrs.Application.Common.Mapping;
+using AspCqrs.Application.Users;
 using AspCqrs.Domain.Entities;
 using AutoMapper;
 
@@ -14,6 +15,8 @@ namespace AspCqrs.Application.TodoItems
         public string Note { get; set; }
         
         public int Priority { get; set; }
+        
+        public UserDto User { get; set; }
         
         public void Mapping(Profile profile)
         {
