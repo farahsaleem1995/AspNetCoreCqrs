@@ -25,20 +25,8 @@ namespace AspCqrs.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Created")
-                        .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("datetime2")
                         .HasColumnName("Created");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModified");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .ValueGeneratedOnUpdateSometimes()
@@ -130,22 +118,12 @@ namespace AspCqrs.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Created");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModified");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

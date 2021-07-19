@@ -13,12 +13,6 @@ namespace AspCqrs.Infrastructure.Persistence.Configurations
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName(nameof(ApplicationUser.UserName));
             
-            builder.Property(entity => entity.Created)
-                .HasColumnName(nameof(ApplicationUser.Created));
-            
-            builder.Property(entity => entity.LastModified)
-                .HasColumnName(nameof(ApplicationUser.LastModified));
-
             builder.HasOne(entity => entity.User)
                 .WithOne()
                 .HasForeignKey<DomainUser>(entity => entity.Id);

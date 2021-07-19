@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Models;
+using AspCqrs.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
@@ -27,9 +28,13 @@ namespace AspCqrs.Infrastructure.Identity
         {
             var user = new ApplicationUser
             {
-                UserName = username,
                 Email = username,
-                Created = DateTime.UtcNow,
+                UserName = username,
+                User = new DomainUser
+                {
+                    UserName = username,
+                    Created = DateTime.UtcNow
+                }
             };
 
             var result = await _userManager.CreateAsync(user, password);

@@ -7,9 +7,5 @@ namespace AspCqrs.Infrastructure.Identity
     public class ApplicationUser : IdentityUser
     {
         public DomainUser User { get; set; }
-        
-        public DateTime Created { get; set; }
-        
-        public DateTime? LastModified { get; set; }
     }
 }

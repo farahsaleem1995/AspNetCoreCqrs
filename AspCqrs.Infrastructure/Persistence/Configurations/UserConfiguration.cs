@@ -14,9 +14,6 @@ namespace AspCqrs.Infrastructure.Persistence.Configurations
             
             builder.Property(entity => entity.Created)
                 .HasColumnName(nameof(DomainUser.Created));
-            
-            builder.Property(entity => entity.LastModified)
-                .HasColumnName(nameof(DomainUser.LastModified));
 
             builder.ToTable("AspNetUsers");
         }
