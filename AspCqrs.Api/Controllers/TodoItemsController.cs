@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AspCqrs.Api.Filters;
 using AspCqrs.Application.TodoItems.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace AspCqrs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExceptionFilter]
     public class TodoItemsController : Controller
     {
         private readonly IMediator _mediator;

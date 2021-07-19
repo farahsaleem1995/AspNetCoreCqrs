@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Mapping;
 using AspCqrs.Domain.Entities;
@@ -37,7 +38,7 @@ namespace AspCqrs.Application.TodoItems.Commands
         public async Task<TodoItemDto> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
-            if (user == null) throw new Exception($"User \"{request.UserId}\" not found.");
+            if (user == null) throw new NotFoundException("User", request.UserId);
             
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
             

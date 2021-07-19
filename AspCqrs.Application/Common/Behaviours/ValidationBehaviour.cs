@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using ValidationException = AspCqrs.Application.Common.Exceptions.ValidationException;
 
 namespace AspCqrs.Application.Common.Behaviours
 {
