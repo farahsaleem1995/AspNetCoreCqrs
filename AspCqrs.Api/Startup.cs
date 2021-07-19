@@ -1,4 +1,6 @@
+using AspCqrs.Api.Services;
 using AspCqrs.Application;
+using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +32,8 @@ namespace AspCqrs.Api
 
             services.AddInfrastructure(Configuration);
             services.AddApplication();
+            
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

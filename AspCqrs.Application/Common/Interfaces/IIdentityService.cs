@@ -5,6 +5,8 @@ namespace AspCqrs.Application.Common.Interfaces
 {
     public interface IIdentityService
     {
+        Task<string> GetUserNameAsync(string userId);
+        
         Task<(Result result, string userId)> CreateUserAsync(string username, string password);
 
         Task<bool> AuthorizeAsync(string userId, string policyName);

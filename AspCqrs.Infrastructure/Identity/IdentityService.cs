@@ -6,6 +6,7 @@ using AspCqrs.Application.Common.Models;
 using AspCqrs.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Infrastructure.Identity
 {
@@ -23,7 +24,14 @@ namespace AspCqrs.Infrastructure.Identity
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
         }
-        
+
+        public async Task<string> GetUserNameAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+
+            return user.UserName;
+        }
+
         public async Task<(Result result, string userId)> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser

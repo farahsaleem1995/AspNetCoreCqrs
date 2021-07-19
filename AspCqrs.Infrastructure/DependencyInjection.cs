@@ -46,7 +46,7 @@ namespace AspCqrs.Infrastructure
             });
             
             services.AddScoped<IIdentityService, IdentityService>();
-
+            
             services.AddScoped<IDomainEventService, DomainEventService>();
 
             services.AddMediatR(typeof(RegisterCommandHandler));
