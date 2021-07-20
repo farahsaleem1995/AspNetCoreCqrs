@@ -32,8 +32,10 @@ namespace AspCqrs.Application.Users.Commands
             if (!result.Succeeded) throw new UnauthorizedAccessException();
 
             var userId = await _identityService.GetUserIdAsync(request.Username);
+
+            var userRoles = await _identityService.GetUserRolesAsync(userId);
             
-            var jwtResult = await _jwtService.Generate(userId, cancellationToken);
+            var jwtResult = await _jwtService.Generate(userId, request.Username, userRoles, cancellationToken);
 
             return jwtResult;
         }

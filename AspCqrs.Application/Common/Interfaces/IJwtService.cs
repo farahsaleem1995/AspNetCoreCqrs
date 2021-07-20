@@ -7,6 +7,9 @@ namespace AspCqrs.Application.Common.Interfaces
 {
     public interface IJwtService
     {
-        Task<JwtResult> Generate(string userId, CancellationToken cancellationToken);
+        Task<JwtResult> Generate(string userId, 
+            string userName, 
+            IEnumerable<string> roles,
+            CancellationToken cancellationToken);
     }
 }

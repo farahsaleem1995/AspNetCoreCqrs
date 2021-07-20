@@ -17,25 +17,21 @@ namespace AspCqrs.Infrastructure.Services
 {
     public class JwtService : IJwtService
     {
-        private readonly IIdentityService _identityService;
         private readonly IApplicationDbContext _dbContext;
         private readonly JwtSettings _jwtSettings;
 
         public JwtService(IOptions<JwtSettings> options,
-            IIdentityService identityService,
             IApplicationDbContext dbContext)
         {
-            _identityService = identityService;
             _dbContext = dbContext;
             _jwtSettings = options.Value;
         }
 
-        public async Task<JwtResult> Generate(string userId, CancellationToken cancellationToken)
+        public async Task<JwtResult> Generate(string userId, 
+            string userName,
+            IEnumerable<string> roles,
+            CancellationToken cancellationToken)
         {
-            var userName = await _identityService.GetUserNameAsync(userId);
-
-            var roles = await _identityService.GetUserRolesAsync(userId);
-            
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));

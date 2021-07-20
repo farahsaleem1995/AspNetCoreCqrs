@@ -28,9 +28,9 @@ namespace AspCqrs.Application.Users.Commands
 
         public async Task<JwtResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var (_, userId) = await _identityService.CreateUserAsync(request.Username, request.Password);
+            var (_, userId, roles) = await _identityService.CreateUserAsync(request.Username, request.Password);
 
-            var jwtResult = await _jwtService.Generate(userId, cancellationToken);
+            var jwtResult = await _jwtService.Generate(userId, request.Username, roles, cancellationToken);
 
             return jwtResult;
         }

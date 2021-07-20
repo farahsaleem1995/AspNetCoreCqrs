@@ -61,7 +61,7 @@ namespace AspCqrs.Infrastructure.Identity
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task<(Result result, string userId)> CreateUserAsync(string userName, string password)
+        public async Task<(Result result, string userId, IEnumerable<string> roles)> CreateUserAsync(string userName, string password)
         {
             var user = new ApplicationUser
             {
@@ -77,7 +77,7 @@ namespace AspCqrs.Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return (result.ToApplicationResult(), user.Id);
+            return (result.ToApplicationResult(), user.Id, new List<string>());
         }
 
         public async Task<bool> AuthorizeAsync(string userId, string policyName)
