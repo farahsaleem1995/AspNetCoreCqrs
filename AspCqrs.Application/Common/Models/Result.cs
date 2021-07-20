@@ -16,7 +16,7 @@ namespace AspCqrs.Application.Common.Models
         
         public static Result Success()
         {
-            return new Result(true, new string[] { });
+            return new Result(true, new List<string>());
         }
 
         public static Result Failure(IEnumerable<string> errors)

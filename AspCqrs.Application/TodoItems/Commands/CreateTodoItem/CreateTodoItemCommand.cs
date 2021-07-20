@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 {
-    public class CreateTodoItemCommand : IRequest<TodoItemDto>, IMapTo<TodoItem>
+    public class CreateTodoItemCommand : IRequest<int>, IMapTo<TodoItem>
     {
         public string Title { get; set; }
 
@@ -23,7 +23,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
         public string UserId { get; set; }
     }
     
-    public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, TodoItemDto>
+    public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, int>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -35,7 +35,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
             _mapper = mapper;
         }
 
-        public async Task<TodoItemDto> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
             if (user == null) throw new NotFoundException("User", request.UserId);
@@ -48,7 +48,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<TodoItem, TodoItemDto>(todoItem);
+            return todoItem.Id;
         }
     }
 }
