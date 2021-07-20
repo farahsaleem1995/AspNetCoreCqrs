@@ -12,7 +12,7 @@ namespace AspCqrs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [ApiExceptionFilter]
+    [ApiExceptionFilter]
     public class TodoItemsController : Controller
     {
         private readonly IMediator _mediator;
