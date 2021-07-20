@@ -1,5 +1,6 @@
 using System;
 using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.Options;
 using AspCqrs.Application.Users.Commands;
 using AspCqrs.Infrastructure.Identity;
 using AspCqrs.Infrastructure.Persistence;
@@ -22,13 +23,13 @@ namespace AspCqrs.Infrastructure
                 builder.UseSqlServer(connection,
                     optionsBuilder =>
                         optionsBuilder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-            
+
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -45,11 +46,16 @@ namespace AspCqrs.Infrastructure
                 options.SignIn.RequireConfirmedAccount = true;
             });
             
+
             services.AddScoped<IIdentityService, IdentityService>();
-            
+
             services.AddScoped<IDomainEventService, DomainEventService>();
+            
+            services.AddScoped<IJwtService, JwtService>();
 
             services.AddMediatR(typeof(RegisterCommandHandler));
+            
+            services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         }
     }
 }

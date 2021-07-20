@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
@@ -13,14 +14,17 @@ namespace AspCqrs.Infrastructure.Identity
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
 
         public IdentityService(UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
             IAuthorizationService authorizationService)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
         }
@@ -32,15 +36,41 @@ namespace AspCqrs.Infrastructure.Identity
             return user.UserName;
         }
 
-        public async Task<(Result result, string userId)> CreateUserAsync(string username, string password)
+        public async Task<string> GetUserIdAsync(string userName)
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
+
+            return user.Id;
+        }
+
+        public async Task<Result> CheckUserNameAndPasswordAsync(string userName, string password)
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
+
+            if (user == null) return Result.Failure(new List<string>{"Username and password does not match."});
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+
+            return result.ToApplicationResult();
+        }
+
+        public async Task<IEnumerable<string>> GetUserRolesAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<(Result result, string userId)> CreateUserAsync(string userName, string password)
         {
             var user = new ApplicationUser
             {
-                Email = username,
-                UserName = username,
+                UserName = userName,
+                Email = userName,
+                EmailConfirmed = true,
                 User = new DomainUser
                 {
-                    UserName = username,
+                    UserName = userName,
                     Created = DateTime.UtcNow
                 }
             };

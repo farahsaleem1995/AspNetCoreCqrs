@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
@@ -8,28 +7,32 @@ using MediatR;
 
 namespace AspCqrs.Application.Users.Commands
 {
-    public class RegisterCommand : IRequest<JwtResult>
+    public class SignInCommand : IRequest<JwtResult>
     {
         public string Username { get; set; }
 
         public string Password { get; set; }
     }
-
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, JwtResult>
+    
+    public class SignInCommandHandler : IRequestHandler<SignInCommand, JwtResult>
     {
         private readonly IIdentityService _identityService;
         private readonly IJwtService _jwtService;
 
-        public RegisterCommandHandler(IIdentityService identityService, IJwtService jwtService)
+        public SignInCommandHandler(IIdentityService identityService, IJwtService jwtService)
         {
             _identityService = identityService;
             _jwtService = jwtService;
         }
 
-        public async Task<JwtResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<JwtResult> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
-            var (_, userId) = await _identityService.CreateUserAsync(request.Username, request.Password);
+            var result = await _identityService.CheckUserNameAndPasswordAsync(request.Username, request.Password);
 
+            if (!result.Succeeded) throw new UnauthorizedAccessException();
+
+            var userId = await _identityService.GetUserIdAsync(request.Username);
+            
             var jwtResult = await _jwtService.Generate(userId, cancellationToken);
 
             return jwtResult;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Models;
 
@@ -7,7 +8,13 @@ namespace AspCqrs.Application.Common.Interfaces
     {
         Task<string> GetUserNameAsync(string userId);
         
-        Task<(Result result, string userId)> CreateUserAsync(string username, string password);
+        Task<string> GetUserIdAsync(string userName);
+
+        Task<Result> CheckUserNameAndPasswordAsync(string userName, string password);
+
+        Task<IEnumerable<string>> GetUserRolesAsync(string userId);
+
+        Task<(Result result, string userId)> CreateUserAsync(string userName, string password);
 
         Task<bool> AuthorizeAsync(string userId, string policyName);
         

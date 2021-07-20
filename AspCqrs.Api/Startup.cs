@@ -1,6 +1,7 @@
 using AspCqrs.Api.Services;
 using AspCqrs.Application;
 using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.Options;
 using AspCqrs.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,9 @@ namespace AspCqrs.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AspCqrs.Api", Version = "v1" });
             });
+
+
+            Configuration.GetValue<JwtSettings>("");
 
             services.AddInfrastructure(Configuration);
             services.AddApplication();

@@ -10,6 +10,8 @@ namespace AspCqrs.Application.Common.Interfaces
         DbSet<TodoItem> TodoItems { get; set; }
         
         DbSet<DomainUser> DomainUsers { get; set; }
+        
+        DbSet<RefreshToken> RefreshTokens { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
