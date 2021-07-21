@@ -39,7 +39,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
         public async Task<Result<int>> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
-            if (user == null) throw new NotFoundException("User", request.UserId);
+            if (user == null) return Result.NotFound<int>("User", request.UserId);
             
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
             

@@ -67,7 +67,7 @@ namespace AspCqrs.Infrastructure.Identity
             var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
 
             if (user == null) 
-                return Result.Failure<(string userId, IEnumerable<string> roles)>(new List<string>{"Username and password does not match."});
+                return Result.Unauthorized<(string userId, IEnumerable<string> roles)>(new List<string>{"Username and password does not match."});
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 

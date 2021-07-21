@@ -38,8 +38,9 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
             var todoItem = await _dbContext.TodoItems
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken: cancellationToken);
-            if (todoItem == null) throw new NotFoundException("Todo item", request.Id);
-
+            
+            if (todoItem == null) return Result.NotFound("Todo item", request.Id);
+            
             _mapper.Map(request, todoItem);
 
             await _dbContext.SaveChangesAsync(cancellationToken);

@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Api.ApiContracts;
+using AspCqrs.Api.Attributes;
 using AspCqrs.Api.Filters;
 using AspCqrs.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace AspCqrs.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [ApiExceptionFilter]
+    [ApiResponse]
     public class AccountsController : Controller
     {
         private readonly IIdentityService _identityService;
@@ -27,14 +29,14 @@ namespace AspCqrs.Api.Controllers
         {
             var creatResult = await _identityService.CreateUserAsync(registerRequest.UserName, registerRequest.UserName);
 
-            if (!creatResult.Succeeded) return Unauthorized(creatResult);
+            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
 
             var jwtResult = await _jwtService.Generate(creatResult.Data.userId, registerRequest.UserName, creatResult.Data.roles,
                 cancellationToken);
             
-            if (!creatResult.Succeeded) return Unauthorized(creatResult);
+            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
 
-            return Ok(jwtResult);
+            return new ObjectResult(jwtResult);
         }
 
         [HttpPost("sign-in")]
@@ -42,14 +44,14 @@ namespace AspCqrs.Api.Controllers
         {
             var creatResult = await _identityService.SignInAsync(signInRequest.UserName, signInRequest.Password);
             
-            if (!creatResult.Succeeded) return Unauthorized(creatResult);
+            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
 
             var jwtResult = await _jwtService.Generate(creatResult.Data.userId, signInRequest.UserName, creatResult.Data.roles,
                 cancellationToken);
             
-            if (!jwtResult.Succeeded) return Unauthorized(jwtResult);
+            if (!jwtResult.Succeeded) return new ObjectResult(jwtResult);
 
-            return Ok(jwtResult);
+            return new ObjectResult(jwtResult);
         }
     }
 }

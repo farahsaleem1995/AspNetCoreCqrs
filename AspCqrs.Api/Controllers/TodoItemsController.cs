@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AspCqrs.Api.Attributes;
 using AspCqrs.Api.Filters;
 using AspCqrs.Application.TodoItems.Commands.CreateTodoItem;
 using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
@@ -13,6 +14,7 @@ namespace AspCqrs.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [ApiExceptionFilter]
+    [ApiResponse]
     public class TodoItemsController : Controller
     {
         private readonly IMediator _mediator;
@@ -26,7 +28,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await _mediator.Send(getAllQuery);
 
-            return Ok(result);
+            return new ObjectResult(result);
         }
 
         [HttpPost]
@@ -34,7 +36,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await _mediator.Send(createCommand);
 
-            return Ok(result);
+            return new ObjectResult(result);
         }
         
         [HttpGet("{id}")]
@@ -45,7 +47,7 @@ namespace AspCqrs.Api.Controllers
                 Id = id
             });
 
-            return Ok(result);
+            return new ObjectResult(result);
         }
         
         [HttpPut("{id}")]
@@ -55,18 +57,18 @@ namespace AspCqrs.Api.Controllers
             
             var result = await _mediator.Send(updateCommand);
 
-            return Ok(result);
+            return new ObjectResult(result);
         }
         
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await _mediator.Send(new DeleteTodoItemCommand
+            var result =await _mediator.Send(new DeleteTodoItemCommand
             {
                 Id = id
             });
 
-            return NoContent();
+            return new ObjectResult(result);
         }
     }
 }
