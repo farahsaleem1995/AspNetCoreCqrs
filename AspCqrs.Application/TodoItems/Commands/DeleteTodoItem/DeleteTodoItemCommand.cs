@@ -25,7 +25,7 @@ namespace AspCqrs.Application.TodoItems.Commands.DeleteTodoItem
         public async Task<Result> Handle(DeleteTodoItemCommand request, CancellationToken cancellationToken)
         {
             var todoItem = await _dbContext.TodoItems.FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
-            if (todoItem == null) return Result.NotFound("Todo item", request.Id);
+            if (todoItem == null) return Result.NotFound("Todo item", request.Id).ToEmptyResult();
 
             _dbContext.TodoItems.Remove(todoItem);
 

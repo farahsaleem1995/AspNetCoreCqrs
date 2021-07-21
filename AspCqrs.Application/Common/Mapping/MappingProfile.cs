@@ -9,18 +9,21 @@ namespace AspCqrs.Application.Common.Mapping
     {
         public MappingProfile()
         {
-            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+            AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => !assembly.IsDynamic)
+                .ToList()
+                .ForEach(ApplyMappingsFromAssembly);
         }
-        
+
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
             var mapFromTypes = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(i => 
+                .Where(t => t.GetInterfaces().Any(i =>
                     i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
                 .ToList();
-            
+
             var mapToTypes = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces().Any(i => 
+                .Where(t => t.GetInterfaces().Any(i =>
                     i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapTo<>)))
                 .ToList();
 
@@ -28,22 +31,20 @@ namespace AspCqrs.Application.Common.Mapping
             {
                 var instance = Activator.CreateInstance(type);
 
-                var methodInfo = type.GetMethod("Mapping") 
+                var methodInfo = type.GetMethod("Mapping")
                                  ?? type.GetInterface("IMapFrom`1")?.GetMethod("Mapping");
-                
-                methodInfo?.Invoke(instance, new object[] { this });
 
+                methodInfo?.Invoke(instance, new object[] {this});
             }
-            
+
             foreach (var type in mapToTypes)
             {
                 var instance = Activator.CreateInstance(type);
 
-                var methodInfo = type.GetMethod("Mapping") 
+                var methodInfo = type.GetMethod("Mapping")
                                  ?? type.GetInterface("IMapTo`1")?.GetMethod("Mapping");
-                
-                methodInfo?.Invoke(instance, new object[] { this });
 
+                methodInfo?.Invoke(instance, new object[] {this});
             }
         }
     }

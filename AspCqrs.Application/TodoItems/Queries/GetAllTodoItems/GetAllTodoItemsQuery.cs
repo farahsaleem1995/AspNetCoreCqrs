@@ -14,10 +14,10 @@ namespace AspCqrs.Application.TodoItems.Queries.GetAllTodoItems
     public class GetAllTodoItemsQuery : IRequest<Result<IEnumerable<TodoItemDto>>>
     {
         public int Page { get; set; }
-        
+
         public byte PageSize { get; set; }
     }
-    
+
     public class GetAllTodoItemsQueryHandler : IRequestHandler<GetAllTodoItemsQuery, Result<IEnumerable<TodoItemDto>>>
     {
         private readonly IApplicationDbContext _dbContext;
@@ -29,16 +29,18 @@ namespace AspCqrs.Application.TodoItems.Queries.GetAllTodoItems
             _mapper = mapper;
         }
 
-        public async Task<Result<IEnumerable<TodoItemDto>>> Handle(GetAllTodoItemsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<TodoItemDto>>> Handle(GetAllTodoItemsQuery request,
+            CancellationToken cancellationToken)
         {
             var todoItems = await _dbContext.TodoItems
                 .Include(t => t.User)
                 .OrderBy(t => t.Created)
-                .Skip(request.Page < 1 ? 1 : (request.Page -1) * (request.PageSize < 1 ? 10 : request.PageSize))
+                .Skip(request.Page < 1 ? 1 : (request.Page - 1) * (request.PageSize < 1 ? 10 : request.PageSize))
                 .Take(request.PageSize < 1 ? 10 : request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            return Result.Success(_mapper.Map<IEnumerable<TodoItem>, IEnumerable<TodoItemDto>>(todoItems));
+            return Result<IEnumerable<TodoItemDto>>.Success(
+                _mapper.Map<IEnumerable<TodoItem>, IEnumerable<TodoItemDto>>(todoItems));
         }
     }
 }

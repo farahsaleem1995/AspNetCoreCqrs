@@ -66,7 +66,7 @@ namespace AspCqrs.Infrastructure.Services
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result.Success(new JwtResult
+            return Result<JwtResult>.Success(new JwtResult
             {
                 AccessToken = tokenHandler.WriteToken(token),
                 RefreshToken = refreshToken.JwtId

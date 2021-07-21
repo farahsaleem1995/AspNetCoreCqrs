@@ -10,30 +10,30 @@ namespace AspCqrs.Infrastructure.Identity
         public static Result ToApplicationResult(this IdentityResult identityResult)
         {
             return identityResult.Succeeded
-                ? Result.Success()
+                ? Result.Success().ToEmptyResult()
                 : Result.Unauthorized(identityResult.Errors.Select(e =>
                 {
-                    return new KeyValuePair<string,string[]>(e.Code, new []{e.Description});
-                }).ToDictionary(x => x.Key, x => x.Value));
+                    return new KeyValuePair<string, string[]>(e.Code, new[] {e.Description});
+                }).ToDictionary(x => x.Key, x => x.Value)).ToEmptyResult();
         }
-        
+
         public static Result<TData> ToApplicationResult<TData>(this IdentityResult identityResult)
         {
             return identityResult.Succeeded
-                ? Result.Success<TData>(default)
-                : Result.Unauthorized<TData>(identityResult.Errors.Select(e =>
+                ? Result<TData>.Success(default)
+                : Result<TData>.Unauthorized(identityResult.Errors.Select(e =>
                 {
-                    return new KeyValuePair<string,string[]>(e.Code, new []{e.Description});
+                    return new KeyValuePair<string, string[]>(e.Code, new[] {e.Description});
                 }).ToDictionary(x => x.Key, x => x.Value));
         }
-        
+
         public static Result<TData> ToApplicationResult<TData>(this IdentityResult identityResult, TData data)
         {
             return identityResult.Succeeded
-                ? Result.Success(data)
-                : Result.Unauthorized<TData>(identityResult.Errors.Select(e =>
+                ? Result<TData>.Success(data)
+                : Result<TData>.Unauthorized(identityResult.Errors.Select(e =>
                 {
-                    return new KeyValuePair<string,string[]>(e.Code, new []{e.Description});
+                    return new KeyValuePair<string, string[]>(e.Code, new[] {e.Description});
                 }).ToDictionary(x => x.Key, x => x.Value));
         }
     }

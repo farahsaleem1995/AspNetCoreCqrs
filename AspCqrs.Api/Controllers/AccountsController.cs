@@ -1,57 +1,39 @@
-using System.Threading;
 using System.Threading.Tasks;
-using AspCqrs.Api.ApiContracts;
+using AspCqrs.Api.ApiContracts.Accounts;
 using AspCqrs.Api.Attributes;
 using AspCqrs.Api.Filters;
-using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.Users.Commands;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [ApiExceptionFilter]
+    // [ApiExceptionFilter]
     [ApiResponse]
-    public class AccountsController : Controller
+    public class AccountsController : ApiBaseController
     {
-        private readonly IIdentityService _identityService;
-        private readonly IJwtService _jwtService;
-
-        public AccountsController(IIdentityService identityService, IJwtService jwtService)
+        public AccountsController(IMediator mediator, IMapper mapper) 
+            : base(mediator, mapper)
         {
-            _identityService = identityService;
-            _jwtService = jwtService;
         }
-
+        
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
-            var creatResult = await _identityService.CreateUserAsync(registerRequest.UserName, registerRequest.UserName);
+            var result = await Mediator.Send(Mapper.Map<RegisterRequest, SignUpCommand>(registerRequest));
 
-            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
-
-            var jwtResult = await _jwtService.Generate(creatResult.Data.userId, registerRequest.UserName, creatResult.Data.roles,
-                cancellationToken);
-            
-            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
-
-            return new ObjectResult(jwtResult);
+            return new ObjectResult(result);
         }
 
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn([FromBody] SignInRequest signInRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> SignIn([FromBody] SignInRequest signInRequest)
         {
-            var creatResult = await _identityService.SignInAsync(signInRequest.UserName, signInRequest.Password);
-            
-            if (!creatResult.Succeeded) return new ObjectResult(creatResult);
+            var result = await Mediator.Send(Mapper.Map<SignInRequest, SignInCommand>(signInRequest));
 
-            var jwtResult = await _jwtService.Generate(creatResult.Data.userId, signInRequest.UserName, creatResult.Data.roles,
-                cancellationToken);
-            
-            if (!jwtResult.Succeeded) return new ObjectResult(jwtResult);
-
-            return new ObjectResult(jwtResult);
+            return new ObjectResult(result);
         }
     }
 }

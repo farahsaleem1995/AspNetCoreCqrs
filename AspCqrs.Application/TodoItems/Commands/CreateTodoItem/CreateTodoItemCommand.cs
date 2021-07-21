@@ -39,7 +39,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
         public async Task<Result<int>> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
-            if (user == null) return Result.NotFound<int>("User", request.UserId);
+            if (user == null) return Result<int>.NotFound("User", request.UserId);
             
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
             
@@ -49,7 +49,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result.Success(todoItem.Id);
+            return Result<int>.Success(todoItem.Id);
         }
     }
 }

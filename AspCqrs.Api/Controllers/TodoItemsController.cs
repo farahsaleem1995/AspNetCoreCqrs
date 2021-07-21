@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AspCqrs.Api.ApiContracts.TodoItems;
 using AspCqrs.Api.Attributes;
 using AspCqrs.Api.Filters;
 using AspCqrs.Application.TodoItems.Commands.CreateTodoItem;
@@ -6,6 +7,7 @@ using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
 using AspCqrs.Application.TodoItems.Commands.UpdateTodoItem;
 using AspCqrs.Application.TodoItems.Queries.GetAllTodoItems;
 using AspCqrs.Application.TodoItems.Queries.GetTodoItemById;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,26 +17,25 @@ namespace AspCqrs.Api.Controllers
     [Route("api/[controller]")]
     [ApiExceptionFilter]
     [ApiResponse]
-    public class TodoItemsController : Controller
+    public class TodoItemsController : ApiBaseController
     {
-        private readonly IMediator _mediator;
-        public TodoItemsController(IMediator mediator)
+        public TodoItemsController(IMediator mediator, IMapper mapper)
+            : base(mediator, mapper)
         {
-            _mediator = mediator;
         }
         
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllTodoItemsQuery getAllQuery)
         {
-            var result = await _mediator.Send(getAllQuery);
+            var result = await Mediator.Send(getAllQuery);
 
             return new ObjectResult(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateTodoItemCommand createCommand)
+        public async Task<IActionResult> Create([FromBody] CreateTodoItemRequest createRequest)
         {
-            var result = await _mediator.Send(createCommand);
+            var result = await Mediator.Send(Mapper.Map<CreateTodoItemRequest, CreateTodoItemCommand>(createRequest));
 
             return new ObjectResult(result);
         }
@@ -42,7 +43,7 @@ namespace AspCqrs.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var result = await _mediator.Send(new GetTodoItemByIdQuery
+            var result = await Mediator.Send(new GetTodoItemByIdQuery
             {
                 Id = id
             });
@@ -51,11 +52,12 @@ namespace AspCqrs.Api.Controllers
         }
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTodoItemCommand updateCommand)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTodoItemRequest updateRequest)
         {
-            updateCommand.SetId(id);
+            var command = Mapper.Map<UpdateTodoItemRequest, UpdateTodoItemCommand>(updateRequest);
+            command.SetId(id);
             
-            var result = await _mediator.Send(updateCommand);
+            var result = await Mediator.Send(command);
 
             return new ObjectResult(result);
         }
@@ -63,7 +65,7 @@ namespace AspCqrs.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var result =await _mediator.Send(new DeleteTodoItemCommand
+            var result =await Mediator.Send(new DeleteTodoItemCommand
             {
                 Id = id
             });

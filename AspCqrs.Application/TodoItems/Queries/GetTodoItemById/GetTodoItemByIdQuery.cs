@@ -31,7 +31,7 @@ namespace AspCqrs.Application.TodoItems.Queries.GetTodoItemById
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
 
-            return Result.Success(_mapper.Map<TodoItem, TodoItemDto>(todoItems));
+            return Result<TodoItemDto>.Success(_mapper.Map<TodoItem, TodoItemDto>(todoItems));
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AspCqrs.Application.Common.Enums;
 using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Models;
@@ -57,7 +56,7 @@ namespace AspCqrs.Api.Filters
             var exception = context.Exception as ValidationException;
 
             context.Result =
-                new BadRequestObjectResult(new Result(false, ResultStatus.NotFound, null, exception?.Errors));
+                new BadRequestObjectResult(new Result(false, ResultStatus.NotFound, exception?.Errors));
 
             context.ExceptionHandled = true;
         }
@@ -69,7 +68,7 @@ namespace AspCqrs.Api.Filters
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             };
             
-            var result = new Result(false, ResultStatus.NotFound, null, details.Errors);
+            var result = new Result(false, ResultStatus.NotFound, details.Errors);
 
             context.Result = new BadRequestObjectResult(result);
 
@@ -81,7 +80,7 @@ namespace AspCqrs.Api.Filters
             var exception = context.Exception as NotFoundException;
 
             context.Result =
-                new NotFoundObjectResult(new Result(false, ResultStatus.NotFound, null, new Dictionary<string, string[]>
+                new NotFoundObjectResult(new Result(false, ResultStatus.NotFound, new Dictionary<string, string[]>
                 {
                     {"Source not found", new[] {exception?.Message}}
                 }));
@@ -92,7 +91,7 @@ namespace AspCqrs.Api.Filters
         private static void HandleUnauthorizedAccessException(ExceptionContext context)
         {
             var exception = context.Exception as UnauthorizedAccessException;
-            var result = new Result(false, ResultStatus.NotFound, null,
+            var result = new Result(false, ResultStatus.NotFound,
                 new Dictionary<string, string[]>
                 {
                     {"Unauthorized", new[] {exception?.Message}}
@@ -108,7 +107,7 @@ namespace AspCqrs.Api.Filters
 
         private static void HandleForbiddenAccessException(ExceptionContext context)
         {
-            var result = new Result(false, ResultStatus.Forbidden, null, null);
+            var result = new Result(false, ResultStatus.Forbidden, null);
 
             context.Result = new ObjectResult(result)
             {
@@ -120,7 +119,7 @@ namespace AspCqrs.Api.Filters
 
         private static void HandleUnknownException(ExceptionContext context)
         {
-            var result = new Result(false, ResultStatus.NotFound, null,
+            var result = new Result(false, ResultStatus.Unknown,
                 new Dictionary<string, string[]>
                 {
                     {"Unknown", new[] {"An error occurred while processing your request."}}

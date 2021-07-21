@@ -69,7 +69,7 @@ namespace AspCqrs.Infrastructure.Identity
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             
             if (user == null)
-                return Result.Unauthorized<(string userId, IEnumerable<string> roles)>(new Dictionary<string, string[]>
+                return Result<(string userId, IEnumerable<string> roles)>.Unauthorized(new Dictionary<string, string[]>
                 {
                     {"Sign In", new[] {"User name and password does not match"}}
                 });
@@ -80,7 +80,7 @@ namespace AspCqrs.Infrastructure.Identity
 
             if (result.Succeeded)
             {
-                return Result.Success<(string userId, IEnumerable<string> roles)>((user.Id, userRoles));
+                return Result<(string userId, IEnumerable<string> roles)>.Success((user.Id, userRoles));
             }
 
             return result.ToApplicationResult<(string userId, IEnumerable<string> roles)>();

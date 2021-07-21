@@ -6,6 +6,7 @@ namespace AspCqrs.Application.Common.Enums
         Forbidden = 403,
         NotFound = 404,
         Success = 200,
-        Unauthorized = 401
+        Unauthorized = 401,
+        Unknown = 500
     }
 }
