@@ -1,11 +1,9 @@
 using System;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Options;
-using AspCqrs.Application.Users.Commands;
 using AspCqrs.Infrastructure.Identity;
 using AspCqrs.Infrastructure.Persistence;
 using AspCqrs.Infrastructure.Services;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -53,8 +51,6 @@ namespace AspCqrs.Infrastructure
             
             services.AddScoped<IJwtService, JwtService>();
 
-            services.AddMediatR(typeof(RegisterCommandHandler));
-            
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         }
     }

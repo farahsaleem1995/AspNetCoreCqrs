@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 {
-    public class UpdateTodoItemCommand : AbstractUpdateCommand<int>, IRequest<TodoItemDto>, IMapTo<TodoItem>
+    public class UpdateTodoItemCommand : AbstractUpdateCommand<int>, IRequest<Result>, IMapTo<TodoItem>
     {
         public string Title { get; set; }
 
@@ -22,7 +22,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
         public int Priority { get; set; }
     }
     
-    public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand, TodoItemDto>
+    public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand, Result>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -33,7 +33,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
             _mapper = mapper;
         }
 
-        public async Task<TodoItemDto> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var todoItem = await _dbContext.TodoItems
                 .Include(t => t.User)
@@ -44,7 +44,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<TodoItem, TodoItemDto>(todoItem);
+            return Result.Success();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace AspCqrs.Infrastructure.Services
             _jwtSettings = options.Value;
         }
 
-        public async Task<JwtResult> Generate(string userId, 
+        public async Task<Result<JwtResult>> Generate(string userId, 
             string userName,
             IEnumerable<string> roles,
             CancellationToken cancellationToken)
@@ -66,11 +66,11 @@ namespace AspCqrs.Infrastructure.Services
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return new JwtResult
+            return Result.Success(new JwtResult
             {
                 AccessToken = tokenHandler.WriteToken(token),
                 RefreshToken = refreshToken.JwtId
-            };
+            });
         }
     }
 }

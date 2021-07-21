@@ -36,24 +36,6 @@ namespace AspCqrs.Infrastructure.Identity
             return user.UserName;
         }
 
-        public async Task<string> GetUserIdAsync(string userName)
-        {
-            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
-
-            return user.Id;
-        }
-
-        public async Task<Result> CheckUserNameAndPasswordAsync(string userName, string password)
-        {
-            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
-
-            if (user == null) return Result.Failure(new List<string>{"Username and password does not match."});
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
-
-            return result.ToApplicationResult();
-        }
-
         public async Task<IEnumerable<string>> GetUserRolesAsync(string userId)
         {
             var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
@@ -61,7 +43,7 @@ namespace AspCqrs.Infrastructure.Identity
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task<(Result result, string userId, IEnumerable<string> roles)> CreateUserAsync(string userName, string password)
+        public async Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName, string password)
         {
             var user = new ApplicationUser
             {
@@ -77,7 +59,26 @@ namespace AspCqrs.Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return (result.ToApplicationResult(), user.Id, new List<string>());
+            return result.ToApplicationResult((user.Id, new List<string>().AsEnumerable()));
+        }
+
+        public async Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName, string password)
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
+
+            if (user == null) 
+                return Result.Failure<(string userId, IEnumerable<string> roles)>(new List<string>{"Username and password does not match."});
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Result.Success<(string userId, IEnumerable<string> roles)>((user.Id, userRoles));
+            }
+
+            return result.ToApplicationResult<(string userId, IEnumerable<string> roles)>();
         }
 
         public async Task<bool> AuthorizeAsync(string userId, string policyName)

@@ -8,13 +8,12 @@ namespace AspCqrs.Application.Common.Interfaces
     {
         Task<string> GetUserNameAsync(string userId);
 
-        Task<string> GetUserIdAsync(string userName);
-
-        Task<Result> CheckUserNameAndPasswordAsync(string userName, string password);
-
         Task<IEnumerable<string>> GetUserRolesAsync(string userId);
 
-        Task<(Result result, string userId, IEnumerable<string> roles)> CreateUserAsync(string userName,
+        Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName,
+            string password);
+        
+        Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName,
             string password);
 
         Task<bool> AuthorizeAsync(string userId, string policyName);
