@@ -3,7 +3,7 @@ using AspCqrs.Application.TodoItems.Commands.UpdateTodoItem;
 
 namespace AspCqrs.Api.ApiContracts.TodoItems
 {
-    public class UpdateTodoItemRequest : IMapTo<UpdateTodoItemCommand>
+    public class UpdateTodoItemRequest : ApiRequest<UpdateTodoItemCommand>, IMapTo<UpdateTodoItemCommand>
     {
         public string Title { get; set; }
 

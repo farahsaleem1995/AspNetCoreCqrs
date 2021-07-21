@@ -11,6 +11,11 @@ namespace AspCqrs.Application.TodoItems.Queries.GetTodoItemById
 {
     public class GetTodoItemByIdQuery: IRequest<Result<TodoItemDto>>
     {
+        public GetTodoItemByIdQuery(int id)
+        {
+            Id = id;
+        }
+        
         public int Id { get; set; }
     }
     

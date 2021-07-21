@@ -13,8 +13,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 {
-    public class UpdateTodoItemCommand : AbstractUpdateCommand<int>, IRequest<Result>, IMapTo<TodoItem>
+    public class UpdateTodoItemCommand : IRequest<Result>, IMapTo<TodoItem>
     {
+        public int Id { get; set; }
+        
         public string Title { get; set; }
 
         public string Note { get; set; }

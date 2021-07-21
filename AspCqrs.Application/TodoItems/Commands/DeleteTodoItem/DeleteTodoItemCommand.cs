@@ -10,6 +10,11 @@ namespace AspCqrs.Application.TodoItems.Commands.DeleteTodoItem
 {
     public class DeleteTodoItemCommand : IRequest<Result>
     {
+        public DeleteTodoItemCommand(int id)
+        {
+            Id = id;
+        }
+        
         public int Id { get; set; }
     }
     
