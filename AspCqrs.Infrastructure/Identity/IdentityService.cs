@@ -43,7 +43,8 @@ namespace AspCqrs.Infrastructure.Identity
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName, string password)
+        public async Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName,
+            string password)
         {
             var user = new ApplicationUser
             {
@@ -62,12 +63,16 @@ namespace AspCqrs.Infrastructure.Identity
             return result.ToApplicationResult((user.Id, new List<string>().AsEnumerable()));
         }
 
-        public async Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName, string password)
+        public async Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName,
+            string password)
         {
-            var user = await _userManager.Users.FirstAsync(u => u.UserName == userName);
-
-            if (user == null) 
-                return Result.Unauthorized<(string userId, IEnumerable<string> roles)>(new List<string>{"Username and password does not match."});
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            
+            if (user == null)
+                return Result.Unauthorized<(string userId, IEnumerable<string> roles)>(new Dictionary<string, string[]>
+                {
+                    {"Sign In", new[] {"User name and password does not match"}}
+                });
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 

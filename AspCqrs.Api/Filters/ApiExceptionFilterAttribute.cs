@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using AspCqrs.Application.Common.Enums;
 using AspCqrs.Application.Common.Exceptions;
+using AspCqrs.Application.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -53,12 +56,8 @@ namespace AspCqrs.Api.Filters
         {
             var exception = context.Exception as ValidationException;
 
-            var details = new ValidationProblemDetails(exception?.Errors)
-            {
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-            };
-
-            context.Result = new BadRequestObjectResult(details);
+            context.Result =
+                new BadRequestObjectResult(new Result(false, ResultStatus.NotFound, null, exception?.Errors));
 
             context.ExceptionHandled = true;
         }
@@ -69,8 +68,10 @@ namespace AspCqrs.Api.Filters
             {
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             };
+            
+            var result = new Result(false, ResultStatus.NotFound, null, details.Errors);
 
-            context.Result = new BadRequestObjectResult(details);
+            context.Result = new BadRequestObjectResult(result);
 
             context.ExceptionHandled = true;
         }
@@ -79,28 +80,25 @@ namespace AspCqrs.Api.Filters
         {
             var exception = context.Exception as NotFoundException;
 
-            var details = new ProblemDetails()
-            {
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-                Title = "The specified resource was not found.",
-                Detail = exception?.Message
-            };
-
-            context.Result = new NotFoundObjectResult(details);
+            context.Result =
+                new NotFoundObjectResult(new Result(false, ResultStatus.NotFound, null, new Dictionary<string, string[]>
+                {
+                    {"Source not found", new[] {exception?.Message}}
+                }));
 
             context.ExceptionHandled = true;
         }
 
         private static void HandleUnauthorizedAccessException(ExceptionContext context)
         {
-            var details = new ProblemDetails
-            {
-                Status = StatusCodes.Status401Unauthorized,
-                Title = "Unauthorized",
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
-            };
+            var exception = context.Exception as UnauthorizedAccessException;
+            var result = new Result(false, ResultStatus.NotFound, null,
+                new Dictionary<string, string[]>
+                {
+                    {"Unauthorized", new[] {exception?.Message}}
+                });
 
-            context.Result = new ObjectResult(details)
+            context.Result = new ObjectResult(result)
             {
                 StatusCode = StatusCodes.Status401Unauthorized
             };
@@ -110,14 +108,9 @@ namespace AspCqrs.Api.Filters
 
         private static void HandleForbiddenAccessException(ExceptionContext context)
         {
-            var details = new ProblemDetails
-            {
-                Status = StatusCodes.Status403Forbidden,
-                Title = "Forbidden",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
-            };
+            var result = new Result(false, ResultStatus.Forbidden, null, null);
 
-            context.Result = new ObjectResult(details)
+            context.Result = new ObjectResult(result)
             {
                 StatusCode = StatusCodes.Status403Forbidden
             };
@@ -127,14 +120,13 @@ namespace AspCqrs.Api.Filters
 
         private static void HandleUnknownException(ExceptionContext context)
         {
-            var details = new ProblemDetails
-            {
-                Status = StatusCodes.Status500InternalServerError,
-                Title = "An error occurred while processing your request.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
-            };
+            var result = new Result(false, ResultStatus.NotFound, null,
+                new Dictionary<string, string[]>
+                {
+                    {"Unknown", new[] {"An error occurred while processing your request."}}
+                });
 
-            context.Result = new ObjectResult(details)
+            context.Result = new ObjectResult(result)
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             };
