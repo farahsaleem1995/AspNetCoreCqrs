@@ -33,12 +33,12 @@ namespace AspCqrs.Application.Users.Commands
         {
             var creatResult = await _identityService.CreateUserAsync(request.UserName, request.UserName);
 
-            if (!creatResult.Succeeded) return Result<TokenDto>.Unauthorized();
+            if (!creatResult.Succeeded) return Result<TokenDto>.BadRequest(creatResult.Errors);
 
             var jwtResult = await _jwtService.Generate(creatResult.Data.userId, request.UserName, creatResult.Data.roles,
                 cancellationToken);
             
-            if (!creatResult.Succeeded) return Result<TokenDto>.Unauthorized();
+            if (!creatResult.Succeeded) return Result<TokenDto>.BadRequest(creatResult.Errors);
 
             return Result<TokenDto>.Success(_mapper.Map<JwtResult, TokenDto>(jwtResult.Data));
         }

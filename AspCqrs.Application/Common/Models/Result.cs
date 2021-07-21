@@ -46,7 +46,7 @@ namespace AspCqrs.Application.Common.Models
         {
             var errors = new Dictionary<string, string[]>
             {
-                {"Source not found", new[] {$"Entity \"{name}\" ({key}) was not found."}}
+                {"SourceNotFound", new[] {$"Entity \"{name}\" ({key}) was not found."}}
             };
 
             return new Result<TData>(false, ResultStatus.NotFound, default, errors);
@@ -56,7 +56,7 @@ namespace AspCqrs.Application.Common.Models
         {
             var errors = new Dictionary<string, string[]>
             {
-                {"Source not found", new[] {message}}
+                {"SourceNotFound", new[] {message}}
             };
             
             return new Result<TData>(false, ResultStatus.NotFound, default, errors);

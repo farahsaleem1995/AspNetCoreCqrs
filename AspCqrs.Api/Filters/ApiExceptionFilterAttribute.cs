@@ -82,7 +82,7 @@ namespace AspCqrs.Api.Filters
             context.Result =
                 new NotFoundObjectResult(new Result(false, ResultStatus.NotFound, new Dictionary<string, string[]>
                 {
-                    {"Source not found", new[] {exception?.Message}}
+                    {"SourceNotFound", new[] {exception?.Message}}
                 }));
 
             context.ExceptionHandled = true;

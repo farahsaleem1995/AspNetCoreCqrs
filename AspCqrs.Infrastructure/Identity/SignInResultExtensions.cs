@@ -13,7 +13,7 @@ namespace AspCqrs.Infrastructure.Identity
                 ? Result.Success().ToEmptyResult()
                 : Result.BadRequest(new Dictionary<string, string[]>
                 {
-                    {"Sign In", new[] {"User name and password does not match"}}
+                    {"PasswordMismatch", new[] {"User name and password does not match"}}
                 }).ToEmptyResult();
         }
 
@@ -23,7 +23,7 @@ namespace AspCqrs.Infrastructure.Identity
                 ? Result<TData>.Success(default)
                 : Result<TData>.Unauthorized(new Dictionary<string, string[]>
                 {
-                    {"Sign In", new[] {"User name and password does not match"}}
+                    {"PasswordMismatch", new[] {"User name and password does not match"}}
                 });
         }
 
@@ -33,7 +33,7 @@ namespace AspCqrs.Infrastructure.Identity
                 ? Result<TData>.Success(data)
                 : Result<TData>.Unauthorized(new Dictionary<string, string[]>
                 {
-                    {"Sign In", new[] {"User name and password does not match"}}
+                    {"PasswordMismatch", new[] {"User name and password does not match"}}
                 });
         }
     }

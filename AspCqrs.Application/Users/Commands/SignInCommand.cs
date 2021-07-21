@@ -31,14 +31,14 @@ namespace AspCqrs.Application.Users.Commands
 
         public async Task<Result<TokenDto>> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
-            var creatResult = await _identityService.SignInAsync(request.UserName, request.Password);
+            var signInResult = await _identityService.SignInAsync(request.UserName, request.Password);
             
-            if (!creatResult.Succeeded) return Result<TokenDto>.Unauthorized();
+            if (!signInResult.Succeeded) return Result<TokenDto>.Unauthorized(signInResult.Errors);
 
-            var jwtResult = await _jwtService.Generate(creatResult.Data.userId, request.UserName, creatResult.Data.roles,
+            var jwtResult = await _jwtService.Generate(signInResult.Data.userId, request.UserName, signInResult.Data.roles,
                 cancellationToken);
             
-            if (!jwtResult.Succeeded) return Result<TokenDto>.Unauthorized();
+            if (!jwtResult.Succeeded) return Result<TokenDto>.Unauthorized(jwtResult.Errors);
 
             return Result<TokenDto>.Success(_mapper.Map<JwtResult, TokenDto>(jwtResult.Data));
         }

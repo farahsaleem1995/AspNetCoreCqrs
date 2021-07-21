@@ -71,7 +71,7 @@ namespace AspCqrs.Infrastructure.Identity
             if (user == null)
                 return Result<(string userId, IEnumerable<string> roles)>.Unauthorized(new Dictionary<string, string[]>
                 {
-                    {"Sign In", new[] {"User name and password does not match"}}
+                    {"PasswordMismatch", new[] {"User name and password does not match"}}
                 });
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
