@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using AspCqrs.Api.ApiContracts.TodoItems;
-using AspCqrs.Api.Attributes;
-using AspCqrs.Api.Filters;
 using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
 using AspCqrs.Application.TodoItems.Queries.GetTodoItemById;
 using AutoMapper;
@@ -10,10 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    [ApiExceptionFilter]
-    [ApiResponse]
     public class TodoItemsController : ApiBaseController
     {
         public TodoItemsController(IMediator mediator, IMapper mapper)

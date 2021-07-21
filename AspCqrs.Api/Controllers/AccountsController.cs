@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    // [ApiExceptionFilter]
-    [ApiResponse]
     public class AccountsController : ApiBaseController
     {
         public AccountsController(IMediator mediator, IMapper mapper) 
