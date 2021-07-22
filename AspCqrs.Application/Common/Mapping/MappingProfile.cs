@@ -9,10 +9,7 @@ namespace AspCqrs.Application.Common.Mapping
     {
         public MappingProfile()
         {
-            AppDomain.CurrentDomain.GetAssemblies()
-                .Where(assembly => !assembly.IsDynamic)
-                .ToList()
-                .ForEach(ApplyMappingsFromAssembly);
+            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         private void ApplyMappingsFromAssembly(Assembly assembly)

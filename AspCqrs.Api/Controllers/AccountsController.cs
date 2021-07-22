@@ -1,7 +1,4 @@
 using System.Threading.Tasks;
-using AspCqrs.Api.ApiContracts.Accounts;
-using AspCqrs.Api.Attributes;
-using AspCqrs.Api.Filters;
 using AspCqrs.Application.Users.Commands;
 using AutoMapper;
 using MediatR;
@@ -18,17 +15,17 @@ namespace AspCqrs.Api.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
+        public async Task<IActionResult> Register([FromBody] SignUpCommand signUpCommand)
         {
-            var result = await Mediator.Send(Mapper.Map<RegisterRequest, SignUpCommand>(registerRequest));
+            var result = await Mediator.Send(signUpCommand);
 
             return new ObjectResult(result);
         }
 
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn([FromBody] SignInRequest signInRequest)
+        public async Task<IActionResult> SignIn([FromBody] SignInCommand signInCommand)
         {
-            var result = await Mediator.Send(Mapper.Map<SignInRequest, SignInCommand>(signInRequest));
+            var result = await Mediator.Send(signInCommand);
 
             return new ObjectResult(result);
         }
