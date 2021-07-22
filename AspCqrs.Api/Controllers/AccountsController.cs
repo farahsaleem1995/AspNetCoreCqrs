@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AspCqrs.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountsController : ApiBaseController
+    public class AccountsController : ApiControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] SignUpCommand signUpCommand)

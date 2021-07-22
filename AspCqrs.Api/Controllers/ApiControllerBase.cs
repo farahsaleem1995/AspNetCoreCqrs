@@ -8,7 +8,7 @@ namespace AspCqrs.Api.Controllers
     [ApiController]
     [ApiExceptionFilter]
     [ApiOkResponseFilter]
-    public class ApiBaseController : Controller
+    public abstract class ApiControllerBase : Controller
     {
         private ISender _mediator;
 
