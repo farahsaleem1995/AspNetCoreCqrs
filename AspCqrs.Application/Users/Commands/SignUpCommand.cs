@@ -1,46 +1,42 @@
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
-using AspCqrs.Application.Common.Models;
-using AutoMapper;
 using MediatR;
 
 namespace AspCqrs.Application.Users.Commands
 {
-    public class SignUpCommand : IRequest<Result<TokenDto>>
+    public class SignUpCommand : IRequest<TokenDto>
     {
         public string UserName { get; set; }
-        
+
         public string Password { get; set; }
     }
-    
-    public class SignUpCommandHandler : IRequestHandler<SignUpCommand, Result<TokenDto>>
+
+    public class SignUpCommandHandler : IRequestHandler<SignUpCommand, TokenDto>
     {
         private readonly IIdentityService _identityService;
         private readonly IJwtService _jwtService;
-        private readonly IMapper _mapper;
 
-        public SignUpCommandHandler(IIdentityService identityService, 
-            IJwtService jwtService,
-            IMapper mapper)
+        public SignUpCommandHandler(IIdentityService identityService, IJwtService jwtService)
         {
             _identityService = identityService;
             _jwtService = jwtService;
-            _mapper = mapper;
         }
 
-        public async Task<Result<TokenDto>> Handle(SignUpCommand request, CancellationToken cancellationToken)
+        public async Task<TokenDto> Handle(SignUpCommand request, CancellationToken cancellationToken)
         {
-            var creatResult = await _identityService.CreateUserAsync(request.UserName, request.UserName);
+            var (creatResult, userId, roles) =
+                await _identityService.CreateUserAsync(request.UserName, request.Password);
 
-            if (!creatResult.Succeeded) return Result<TokenDto>.BadRequest(creatResult.Errors);
+            if (!creatResult.Succeeded) throw new AppFailureException(creatResult.Errors);
 
-            var jwtResult = await _jwtService.Generate(creatResult.Data.userId, request.UserName, creatResult.Data.roles,
-                cancellationToken);
+            var (accessToken, refreshToken) =
+                await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);
             
-            if (!creatResult.Succeeded) return Result<TokenDto>.BadRequest(creatResult.Errors);
-
-            return Result<TokenDto>.Success(_mapper.Map<JwtResult, TokenDto>(jwtResult.Data));
+            return new TokenDto(accessToken, refreshToken);
         }
     }
 }

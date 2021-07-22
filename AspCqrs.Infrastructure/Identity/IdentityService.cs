@@ -43,7 +43,7 @@ namespace AspCqrs.Infrastructure.Identity
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName,
+        public async Task<(Result result, string userId, IEnumerable<string> roles)> CreateUserAsync(string userName,
             string password)
         {
             var user = new ApplicationUser
@@ -60,30 +60,31 @@ namespace AspCqrs.Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return result.ToApplicationResult((user.Id, new List<string>().AsEnumerable()));
+            return (result.ToApplicationResult(), user.Id, new List<string>());
         }
 
-        public async Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName,
+        public async Task<(Result result, string userId, IEnumerable<string> roles)> SignInAsync(string userName,
             string password)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-            
+
             if (user == null)
-                return Result<(string userId, IEnumerable<string> roles)>.Unauthorized(new Dictionary<string, string[]>
+                return (Result.Failure(new Dictionary<string, string[]>
                 {
-                    {"PasswordMismatch", new[] {"User name and password does not match"}}
-                });
+                    {"PasswordMismatch", new[] {"Username and password does not match."}}
+                }), null, null);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 
+            if (!result.Succeeded)
+                return (Result.Failure(new Dictionary<string, string[]>
+                {
+                    {"PasswordMismatch", new[] {"Username and password does not match."}}
+                }), null, null);
+
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            if (result.Succeeded)
-            {
-                return Result<(string userId, IEnumerable<string> roles)>.Success((user.Id, userRoles));
-            }
-
-            return result.ToApplicationResult<(string userId, IEnumerable<string> roles)>();
+            return (result.ToApplicationResult(), user.Id, userRoles);
         }
 
         public async Task<bool> AuthorizeAsync(string userId, string policyName)

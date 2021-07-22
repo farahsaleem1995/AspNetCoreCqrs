@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using AspCqrs.Application.Common.Models;
 using AspCqrs.Application.TodoItems.Commands.CreateTodoItem;
 using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
 using AspCqrs.Application.TodoItems.Commands.UpdateTodoItem;
@@ -25,7 +23,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(getAllQuery);
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -33,7 +31,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(createCommand);
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -41,21 +39,17 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(new GetTodoItemByIdQuery(id));
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTodoItemCommand updateCommand)
         {
-            if (updateCommand.Id != id)
-                return new ObjectResult(Result.BadRequest(new Dictionary<string, string[]>
-                {
-                    {"InvalidID", new[] {"ID does not match"}}
-                }));
+            if (updateCommand.Id != id) return BadRequest();
 
             var result = await Mediator.Send(updateCommand);
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -63,7 +57,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(new DeleteTodoItemCommand(id));
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
     }
 }

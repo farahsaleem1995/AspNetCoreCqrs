@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using AspCqrs.Application.Common.Enums;
+using AspCqrs.Api.Models;
 using AspCqrs.Application.Common.Exceptions;
-using AspCqrs.Application.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -20,8 +19,8 @@ namespace AspCqrs.Api.Filters
             {
                 {typeof(ValidationException), HandleValidationException},
                 {typeof(NotFoundException), HandleNotFoundException},
-                {typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException},
-                {typeof(ForbiddenAccessException), HandleForbiddenAccessException},
+                {typeof(UnauthorizedRequestException), HandleUnauthorizedRequestException},
+                {typeof(ForbiddenRequestException), HandleForbiddenRequestException},
             };
         }
 
@@ -55,8 +54,12 @@ namespace AspCqrs.Api.Filters
         {
             var exception = context.Exception as ValidationException;
 
-            context.Result =
-                new BadRequestObjectResult(new Result(false, ResultStatus.NotFound, exception?.Errors));
+            context.Result = new BadRequestObjectResult(new ApiResponse<object>
+            {
+                Success = false,
+                Errors = exception?.Errors,
+                Data = null
+            });
 
             context.ExceptionHandled = true;
         }
@@ -67,8 +70,13 @@ namespace AspCqrs.Api.Filters
             {
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             };
-            
-            var result = new Result(false, ResultStatus.NotFound, details.Errors);
+
+            var result = new ApiResponse<object>
+            {
+                Success = false,
+                Errors = details.Errors,
+                Data = null
+            };
 
             context.Result = new BadRequestObjectResult(result);
 
@@ -79,23 +87,28 @@ namespace AspCqrs.Api.Filters
         {
             var exception = context.Exception as NotFoundException;
 
-            context.Result =
-                new NotFoundObjectResult(new Result(false, ResultStatus.NotFound, new Dictionary<string, string[]>
+            context.Result = new NotFoundObjectResult(new ApiResponse<object>
+            {
+                Success = false,
+                Errors = new Dictionary<string, string[]>
                 {
                     {"SourceNotFound", new[] {exception?.Message}}
-                }));
+                },
+                Data = null
+            });
 
             context.ExceptionHandled = true;
         }
 
-        private static void HandleUnauthorizedAccessException(ExceptionContext context)
+        private static void HandleUnauthorizedRequestException(ExceptionContext context)
         {
-            var exception = context.Exception as UnauthorizedAccessException;
-            var result = new Result(false, ResultStatus.NotFound,
-                new Dictionary<string, string[]>
-                {
-                    {"Unauthorized", new[] {exception?.Message}}
-                });
+            var exception = context.Exception as UnauthorizedRequestException;
+            var result = new ApiResponse<object>
+            {
+                Success = false,
+                Errors = exception?.Errors,
+                Data = null
+            };
 
             context.Result = new ObjectResult(result)
             {
@@ -105,25 +118,24 @@ namespace AspCqrs.Api.Filters
             context.ExceptionHandled = true;
         }
 
-        private static void HandleForbiddenAccessException(ExceptionContext context)
+        private static void HandleForbiddenRequestException(ExceptionContext context)
         {
-            var result = new Result(false, ResultStatus.Forbidden, null);
-
-            context.Result = new ObjectResult(result)
-            {
-                StatusCode = StatusCodes.Status403Forbidden
-            };
+            context.Result = new ForbidResult();
 
             context.ExceptionHandled = true;
         }
 
         private static void HandleUnknownException(ExceptionContext context)
         {
-            var result = new Result(false, ResultStatus.Unknown,
-                new Dictionary<string, string[]>
+            var result = new ApiResponse<object>
+            {
+                Success = false,
+                Errors = new Dictionary<string, string[]>
                 {
                     {"Unknown", new[] {"An error occurred while processing your request."}}
-                });
+                },
+                Data = null
+            };
 
             context.Result = new ObjectResult(result)
             {

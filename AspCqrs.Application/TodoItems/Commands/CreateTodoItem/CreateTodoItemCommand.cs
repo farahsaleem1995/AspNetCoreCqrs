@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Exceptions;
@@ -9,11 +8,13 @@ using AspCqrs.Domain.Entities;
 using AspCqrs.Domain.Events;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 {
-    public class CreateTodoItemCommand : IRequest<Result<int>>, IMapTo<TodoItem>
+    [Authorize]
+    public class CreateTodoItemCommand : IRequest<int>, IMapTo<TodoItem>
     {
         public string Title { get; set; }
 
@@ -24,7 +25,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
         public string UserId { get; set; }
     }
     
-    public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, Result<int>>
+    public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, int>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -36,10 +37,10 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
             _mapper = mapper;
         }
 
-        public async Task<Result<int>> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken: cancellationToken);
-            if (user == null) return Result<int>.NotFound("User", request.UserId);
+            if (user == null) throw new NotFoundException("User", request.UserId);
             
             var todoItem = _mapper.Map<CreateTodoItemCommand, TodoItem>(request);
             
@@ -49,7 +50,7 @@ namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result<int>.Success(todoItem.Id);
+            return todoItem.Id;
         }
     }
 }

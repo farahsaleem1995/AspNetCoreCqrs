@@ -1,46 +1,39 @@
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
-using AspCqrs.Application.Common.Models;
-using AutoMapper;
 using MediatR;
 
 namespace AspCqrs.Application.Users.Commands
 {
-    public class SignInCommand : IRequest<Result<TokenDto>>
+    public class SignInCommand : IRequest<TokenDto>
     {
         public string UserName { get; set; }
-        
+
         public string Password { get; set; }
     }
-    
-    public class SignInCommandHandler : IRequestHandler<SignInCommand, Result<TokenDto>>
+
+    public class SignInCommandHandler : IRequestHandler<SignInCommand, TokenDto>
     {
         private readonly IIdentityService _identityService;
         private readonly IJwtService _jwtService;
-        private readonly IMapper _mapper;
 
-        public SignInCommandHandler(IIdentityService identityService, 
-            IJwtService jwtService,
-            IMapper mapper)
+        public SignInCommandHandler(IIdentityService identityService, IJwtService jwtService)
         {
             _identityService = identityService;
             _jwtService = jwtService;
-            _mapper = mapper;
         }
 
-        public async Task<Result<TokenDto>> Handle(SignInCommand request, CancellationToken cancellationToken)
+        public async Task<TokenDto> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
-            var signInResult = await _identityService.SignInAsync(request.UserName, request.Password);
-            
-            if (!signInResult.Succeeded) return Result<TokenDto>.Unauthorized(signInResult.Errors);
+            var (signInResult, userId, roles) = await _identityService.SignInAsync(request.UserName, request.Password);
 
-            var jwtResult = await _jwtService.Generate(signInResult.Data.userId, request.UserName, signInResult.Data.roles,
-                cancellationToken);
-            
-            if (!jwtResult.Succeeded) return Result<TokenDto>.Unauthorized(jwtResult.Errors);
+            if (!signInResult.Succeeded) throw new UnauthorizedRequestException(signInResult.Errors);
 
-            return Result<TokenDto>.Success(_mapper.Map<JwtResult, TokenDto>(jwtResult.Data));
+            var (accessToken, refreshToken) =
+                await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);
+
+            return new TokenDto(accessToken, refreshToken);
         }
     }
 }

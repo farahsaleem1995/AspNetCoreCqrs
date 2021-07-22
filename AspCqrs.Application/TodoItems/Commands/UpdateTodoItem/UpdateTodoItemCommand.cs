@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 {
-    public class UpdateTodoItemCommand : IRequest<Result>, IMapTo<TodoItem>
+    public class UpdateTodoItemCommand : IRequest, IMapTo<TodoItem>
     {
         public int Id { get; set; }
         
@@ -24,7 +24,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
         public int Priority { get; set; }
     }
     
-    public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand, Result>
+    public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -35,19 +35,19 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
             _mapper = mapper;
         }
 
-        public async Task<Result> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var todoItem = await _dbContext.TodoItems
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken: cancellationToken);
-            
-            if (todoItem == null) return Result.NotFound("Todo item", request.Id).ToEmptyResult();
+
+            if (todoItem == null) throw new NotFoundException("Todo item", request.Id);
             
             _mapper.Map(request, todoItem);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();
+            return Unit.Value;
         }
     }
 }

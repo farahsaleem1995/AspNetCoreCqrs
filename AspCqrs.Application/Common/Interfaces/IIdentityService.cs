@@ -10,10 +10,10 @@ namespace AspCqrs.Application.Common.Interfaces
 
         Task<IEnumerable<string>> GetUserRolesAsync(string userId);
 
-        Task<Result<(string userId, IEnumerable<string> roles)>> CreateUserAsync(string userName,
+        Task<(Result result, string userId, IEnumerable<string> roles)> CreateUserAsync(string userName,
             string password);
-        
-        Task<Result<(string userId, IEnumerable<string> roles)>> SignInAsync(string userName,
+
+        Task<(Result result, string userId, IEnumerable<string> roles)> SignInAsync(string userName,
             string password);
 
         Task<bool> AuthorizeAsync(string userId, string policyName);

@@ -3,8 +3,14 @@ using AspCqrs.Application.Common.Models;
 
 namespace AspCqrs.Application.Users
 {
-    public class TokenDto : IMapFrom<JwtResult>
+    public class TokenDto
     {
+        public TokenDto(string accessToken, string refreshToken)
+        {
+            AccessToken = accessToken;
+            refreshToken = refreshToken;
+        }
+        
         public string AccessToken { get; set; }
         
         public string RefreshToken { get; set; }

@@ -19,7 +19,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(signUpCommand);
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
 
         [HttpPost("sign-in")]
@@ -27,7 +27,7 @@ namespace AspCqrs.Api.Controllers
         {
             var result = await Mediator.Send(signInCommand);
 
-            return new ObjectResult(result);
+            return Ok(result);
         }
     }
 }
