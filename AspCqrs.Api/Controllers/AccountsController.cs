@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using AspCqrs.Application.Users.Commands;
-using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers

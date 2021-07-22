@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace AspCqrs.Application.Common.Exceptions
 {
-    public class AppFailureException : Exception
+    public class FailedRequestException : Exception
     {
-        public AppFailureException(IDictionary<string, string[]> errors)
+        public FailedRequestException(IDictionary<string, string[]> errors)
             : base("Failed to perform the specified action.")
         {
             Errors = errors;

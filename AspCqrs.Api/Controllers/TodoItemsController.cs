@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using AspCqrs.Application.TodoItems.Commands.CreateTodoItem;
 using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;

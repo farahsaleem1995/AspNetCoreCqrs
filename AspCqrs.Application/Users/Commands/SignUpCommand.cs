@@ -31,7 +31,7 @@ namespace AspCqrs.Application.Users.Commands
             var (creatResult, userId, roles) =
                 await _identityService.CreateUserAsync(request.UserName, request.Password);
 
-            if (!creatResult.Succeeded) throw new AppFailureException(creatResult.Errors);
+            if (!creatResult.Succeeded) throw new FailedRequestException(creatResult.Errors);
 
             var (accessToken, refreshToken) =
                 await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);

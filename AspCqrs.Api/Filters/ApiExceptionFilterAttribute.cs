@@ -19,6 +19,7 @@ namespace AspCqrs.Api.Filters
             {
                 {typeof(ValidationException), HandleValidationException},
                 {typeof(NotFoundException), HandleNotFoundException},
+                {typeof(FailedRequestException), HandleFailedRequestException},
                 {typeof(UnauthorizedRequestException), HandleUnauthorizedRequestException},
                 {typeof(ForbiddenRequestException), HandleForbiddenRequestException},
             };
@@ -94,6 +95,20 @@ namespace AspCqrs.Api.Filters
                 {
                     {"SourceNotFound", new[] {exception?.Message}}
                 },
+                Data = null
+            });
+
+            context.ExceptionHandled = true;
+        }
+        
+        private static void HandleFailedRequestException(ExceptionContext context)
+        {
+            var exception = context.Exception as FailedRequestException;
+
+            context.Result = new BadRequestObjectResult(new ApiResponse<object>
+            {
+                Succeeded = false,
+                Errors = exception?.Errors,
                 Data = null
             });
 
