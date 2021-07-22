@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Domain.Entities;
 using AutoMapper;
@@ -31,11 +32,13 @@ namespace AspCqrs.Application.TodoItems.Queries.GetTodoItemById
 
         public async Task<TodoItemDto> Handle(GetTodoItemByIdQuery request, CancellationToken cancellationToken)
         {
-            var todoItems = await _dbContext.TodoItems
+            var todoItem = await _dbContext.TodoItems
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
+            
+            if (todoItem == null) throw new NotFoundException("Todo item", request.Id);
 
-            return _mapper.Map<TodoItem, TodoItemDto>(todoItems);
+            return _mapper.Map<TodoItem, TodoItemDto>(todoItem);
         }
     }
 }

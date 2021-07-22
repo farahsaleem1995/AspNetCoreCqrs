@@ -56,7 +56,7 @@ namespace AspCqrs.Api.Filters
 
             context.Result = new BadRequestObjectResult(new ApiResponse<object>
             {
-                Success = false,
+                Succeeded = false,
                 Errors = exception?.Errors,
                 Data = null
             });
@@ -73,7 +73,7 @@ namespace AspCqrs.Api.Filters
 
             var result = new ApiResponse<object>
             {
-                Success = false,
+                Succeeded = false,
                 Errors = details.Errors,
                 Data = null
             };
@@ -89,7 +89,7 @@ namespace AspCqrs.Api.Filters
 
             context.Result = new NotFoundObjectResult(new ApiResponse<object>
             {
-                Success = false,
+                Succeeded = false,
                 Errors = new Dictionary<string, string[]>
                 {
                     {"SourceNotFound", new[] {exception?.Message}}
@@ -105,7 +105,7 @@ namespace AspCqrs.Api.Filters
             var exception = context.Exception as UnauthorizedRequestException;
             var result = new ApiResponse<object>
             {
-                Success = false,
+                Succeeded = false,
                 Errors = exception?.Errors,
                 Data = null
             };
@@ -129,7 +129,7 @@ namespace AspCqrs.Api.Filters
         {
             var result = new ApiResponse<object>
             {
-                Success = false,
+                Succeeded = false,
                 Errors = new Dictionary<string, string[]>
                 {
                     {"Unknown", new[] {"An error occurred while processing your request."}}

@@ -9,11 +9,6 @@ namespace AspCqrs.Api.Controllers
     [Route("api/[controller]")]
     public class AccountsController : ApiBaseController
     {
-        public AccountsController(IMediator mediator, IMapper mapper) 
-            : base(mediator, mapper)
-        {
-        }
-        
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] SignUpCommand signUpCommand)
         {

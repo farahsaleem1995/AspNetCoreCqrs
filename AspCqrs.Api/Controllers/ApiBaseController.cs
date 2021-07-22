@@ -1,8 +1,9 @@
 using AspCqrs.Api.Attributes;
 using AspCqrs.Api.Filters;
-using AutoMapper;
+using AspCqrs.Api.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AspCqrs.Api.Controllers
 {
@@ -11,13 +12,8 @@ namespace AspCqrs.Api.Controllers
     [ApiResponse]
     public class ApiBaseController : Controller
     {
-        protected readonly IMediator Mediator;
-        protected readonly IMapper Mapper;
+        private ISender _mediator;
 
-        public ApiBaseController(IMediator mediator, IMapper mapper)
-        {
-            Mediator = mediator;
-            Mapper = mapper;
-        }
+        protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
     }
 }

@@ -20,7 +20,7 @@ namespace AspCqrs.Api.Attributes
 
                 var response = Activator.CreateInstance(apiResponseType);
                 
-                apiResponseType.GetProperty("Success")?.SetValue(response, true);
+                apiResponseType.GetProperty("Succeeded")?.SetValue(response, true);
                 apiResponseType.GetProperty("Errors")?.SetValue(response, null);
                 apiResponseType.GetProperty("Data")?.SetValue(response, objectResult.Value);
                 

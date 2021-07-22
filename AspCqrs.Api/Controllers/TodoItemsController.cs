@@ -1,11 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using AspCqrs.Application.TodoItems.Commands.CreateTodoItem;
 using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
 using AspCqrs.Application.TodoItems.Commands.UpdateTodoItem;
 using AspCqrs.Application.TodoItems.Queries.GetAllTodoItems;
 using AspCqrs.Application.TodoItems.Queries.GetTodoItemById;
-using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
@@ -13,11 +12,6 @@ namespace AspCqrs.Api.Controllers
     [Route("api/[controller]")]
     public class TodoItemsController : ApiBaseController
     {
-        public TodoItemsController(IMediator mediator, IMapper mapper)
-            : base(mediator, mapper)
-        {
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllTodoItemsQuery getAllQuery)
         {
@@ -38,14 +32,14 @@ namespace AspCqrs.Api.Controllers
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await Mediator.Send(new GetTodoItemByIdQuery(id));
-
+            
             return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTodoItemCommand updateCommand)
         {
-            if (updateCommand.Id != id) return BadRequest();
+            updateCommand.Id = id;
 
             var result = await Mediator.Send(updateCommand);
 
