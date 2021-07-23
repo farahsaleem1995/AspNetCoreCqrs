@@ -44,13 +44,7 @@ namespace AspCqrs.Api.Controllers
                 out var bodyId);
 
             if (!result || bodyId != id)
-                throw new FailedRequestException(new Dictionary<string, string[]>
-                {
-                    {
-                        "IdMisMatch",
-                        new[] {$"Route ID value ({id}) does not match body ID Property value ({bodyId})."}
-                    }
-                });
+                throw new FailedRequestException("IdMisMatch", $"Route ID value ({id}) does not match body ID Property value ({bodyId}).");
             
             await Mediator.Send(updateCommand);
 

@@ -5,8 +5,10 @@ namespace AspCqrs.Application.Common.Exceptions
 {
     public class UnauthorizedRequestException : Exception
     {
+        private const string ErrorMessage = "Unauthorized request.";
+        
         public UnauthorizedRequestException()
-            : base("Unauthorized request")
+            : base(ErrorMessage)
         {
             Errors = new Dictionary<string, string[]>
             {
@@ -15,9 +17,21 @@ namespace AspCqrs.Application.Common.Exceptions
         }
 
         public UnauthorizedRequestException(IDictionary<string, string[]> errors)
-            : base("Unauthorized request")
+            : base(ErrorMessage)
         {
             Errors = errors;
+        }
+        
+        public UnauthorizedRequestException(string code, string[] description)
+            : base(ErrorMessage)
+        {
+            Errors = new Dictionary<string, string[]> {{code, description}};
+        }
+
+        public UnauthorizedRequestException(string code, string description)
+            : base(ErrorMessage)
+        {
+            Errors = new Dictionary<string, string[]> {{code, new[] {description}}};
         }
 
         public IDictionary<string, string[]> Errors { get; }
