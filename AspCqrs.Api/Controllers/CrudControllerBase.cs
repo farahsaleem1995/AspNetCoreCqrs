@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using AspCqrs.Application.Common.Exceptions;
+using AspCqrs.Api.Filters;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
@@ -38,14 +38,9 @@ namespace AspCqrs.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TUpdateCommand updateCommand)
+        [IdMatchFilter(typeof(IRequest), "Id")]
+        public async Task<IActionResult> Update([FromBody] TUpdateCommand updateCommand)
         {
-            var result = int.TryParse(typeof(TUpdateCommand).GetProperty("Id")?.GetValue(updateCommand)?.ToString(),
-                out var bodyId);
-
-            if (!result || bodyId != id)
-                throw new FailedRequestException("IdMisMatch", $"Route ID value ({id}) does not match body ID Property value ({bodyId}).");
-            
             await Mediator.Send(updateCommand);
 
             return NoContent();
