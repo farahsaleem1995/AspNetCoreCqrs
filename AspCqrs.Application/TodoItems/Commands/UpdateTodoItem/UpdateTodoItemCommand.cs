@@ -1,11 +1,9 @@
-using System;
-using System.Dynamic;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Mapping;
-using AspCqrs.Application.Common.Models;
 using AspCqrs.Domain.Entities;
 using AutoMapper;
 using MediatR;
@@ -15,6 +13,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 {
     public class UpdateTodoItemCommand : IRequest, IMapTo<TodoItem>
     {
+        [JsonIgnore]
         public int Id { get; set; }
         
         public string Title { get; set; }

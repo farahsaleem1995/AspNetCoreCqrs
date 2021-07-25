@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using AspCqrs.Api.Filters;
-using MediatR;
+using AspCqrs.Api.Binders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers
@@ -38,8 +37,9 @@ namespace AspCqrs.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [MatchRouteAndBodyFilter("id")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TUpdateCommand updateCommand)
+        public async Task<IActionResult> Update([FromRoute] int id,
+            [FromBody] [ModelBinder(BinderType = typeof(RouteIdBinder))]
+            TUpdateCommand updateCommand)
         {
             await Mediator.Send(updateCommand);
 
