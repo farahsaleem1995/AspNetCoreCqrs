@@ -38,8 +38,8 @@ namespace AspCqrs.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [IdMatchFilter(typeof(IRequest), "Id")]
-        public async Task<IActionResult> Update([FromBody] TUpdateCommand updateCommand)
+        [MatchRouteAndBodyFilter("id")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TUpdateCommand updateCommand)
         {
             await Mediator.Send(updateCommand);
 
