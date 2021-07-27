@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Attributes;
 using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Mapping;
@@ -13,7 +13,7 @@ namespace AspCqrs.Application.TodoItems.Commands.UpdateTodoItem
 {
     public class UpdateTodoItemCommand : IRequest, IMapTo<TodoItem>
     {
-        [JsonIgnore]
+        [KeyProperty]
         public int Id { get; set; }
         
         public string Title { get; set; }

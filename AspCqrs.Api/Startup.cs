@@ -1,3 +1,4 @@
+using AspCqrs.Api.OpenApi;
 using AspCqrs.Api.Services;
 using AspCqrs.Application;
 using AspCqrs.Application.Common.Interfaces;
@@ -28,6 +29,7 @@ namespace AspCqrs.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
+                c.SchemaFilter<SwaggerKeyPropertySchemaFilter>();
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AspCqrs.Api", Version = "v1" });
             });
 
