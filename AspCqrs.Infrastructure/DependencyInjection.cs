@@ -75,6 +75,8 @@ namespace AspCqrs.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddScoped<IDomainEventService, DomainEventService>();
+            
+            services.AddScoped<IDateTimeService, DateTimeService>();
 
             services.AddScoped<IJwtService, JwtService>();
 

@@ -18,12 +18,15 @@ namespace AspCqrs.Infrastructure.Services
     public class JwtService : IJwtService
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly IDateTimeService _dateTimeService;
         private readonly JwtSettings _jwtSettings;
 
         public JwtService(IOptions<JwtSettings> options,
-            IApplicationDbContext dbContext)
+            IApplicationDbContext dbContext,
+            IDateTimeService dateTimeService)
         {
             _dbContext = dbContext;
+            _dateTimeService = dateTimeService;
             _jwtSettings = options.Value;
         }
 
@@ -36,7 +39,7 @@ namespace AspCqrs.Infrastructure.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.Add(_jwtSettings.LifeTime);
+            var expires = _dateTimeService.Now.Add(_jwtSettings.LifeTime);
 
             var claims = new List<Claim>
             {
@@ -60,7 +63,7 @@ namespace AspCqrs.Infrastructure.Services
             {
                 JwtId = token.Id,
                 UserId = userId,
-                ExpireAt = DateTime.UtcNow.AddMonths(6)
+                ExpireAt = _dateTimeService.Now.AddMonths(6)
             };
             _dbContext.RefreshTokens.Add(refreshToken);
 

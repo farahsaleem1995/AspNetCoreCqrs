@@ -17,16 +17,19 @@ namespace AspCqrs.Infrastructure.Identity
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IDateTimeService _dateTimeService;
 
         public IdentityService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IDateTimeService dateTimeService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<string> GetUserNameAsync(string userId)
@@ -54,7 +57,7 @@ namespace AspCqrs.Infrastructure.Identity
                 User = new DomainUser
                 {
                     UserName = userName,
-                    Created = DateTime.UtcNow
+                    Created = _dateTimeService.Now
                 }
             };
 

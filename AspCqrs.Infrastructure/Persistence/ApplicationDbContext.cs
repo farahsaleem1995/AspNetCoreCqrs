@@ -16,12 +16,15 @@ namespace AspCqrs.Infrastructure.Persistence
         IApplicationDbContext
     {
         private readonly IDomainEventService _domainEventService;
+        private readonly IDateTimeService _dateTimeService;
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
-            IDomainEventService domainEventService)
+            IDomainEventService domainEventService,
+            IDateTimeService dateTimeService)
             : base(options)
         {
             _domainEventService = domainEventService;
+            _dateTimeService = dateTimeService;
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
@@ -37,11 +40,11 @@ namespace AspCqrs.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = DateTime.UtcNow;
+                        entry.Entity.Created = _dateTimeService.Now;
                         entry.Entity.CreatedBy = "";
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModified = DateTime.UtcNow;
+                        entry.Entity.LastModified = _dateTimeService.Now;
                         entry.Entity.LastModifiedBy = "";
                         break;
                 }
