@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AspCqrs.Api.Extensions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 
 namespace AspCqrs.Api.Binders
 {
@@ -25,7 +25,7 @@ namespace AspCqrs.Api.Binders
 
             //Deserialize body content to model instance  
             var modelType = bindingContext.ModelMetadata.UnderlyingOrModelType;
-            var modelInstance = JsonConvert.DeserializeObject(valueFromBody, modelType);
+            var modelInstance = JsonSerializer.Deserialize(valueFromBody, modelType);
             var modelPropertyType = modelType.GetProperty("Id")?.GetValue(modelInstance, null)?.GetType();
 
             //If Id is available and it is of model property type then try to set the model instance property  

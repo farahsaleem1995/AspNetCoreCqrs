@@ -4,6 +4,7 @@ using AspCqrs.Application.TodoItems.Commands.DeleteTodoItem;
 using AspCqrs.Application.TodoItems.Commands.UpdateTodoItem;
 using AspCqrs.Application.TodoItems.Queries.GetAllTodoItems;
 using AspCqrs.Application.TodoItems.Queries.GetTodoItemById;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers

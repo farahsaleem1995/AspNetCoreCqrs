@@ -11,7 +11,7 @@ namespace AspCqrs.Api.Extensions
                 convertedObj = Convert.ChangeType(obj, type);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 convertedObj = null;
                 return false;

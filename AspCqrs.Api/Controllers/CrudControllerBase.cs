@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AspCqrs.Api.Binders;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers

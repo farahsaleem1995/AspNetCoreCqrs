@@ -4,8 +4,8 @@ namespace AspCqrs.Application.Options
 {
     public class JwtSettings
     {
-        public static readonly string Section = "JwtSettings";
-        
+        public const string Section = "JwtSettings";
+
         public string Key { get; set; }
 
         public TimeSpan LifeTime { get; set; }

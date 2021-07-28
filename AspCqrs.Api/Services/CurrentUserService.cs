@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using AspCqrs.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Http;

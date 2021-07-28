@@ -8,7 +8,7 @@ namespace AspCqrs.Application.Users
         public TokenDto(string accessToken, string refreshToken)
         {
             AccessToken = accessToken;
-            refreshToken = refreshToken;
+            RefreshToken = refreshToken;
         }
         
         public string AccessToken { get; set; }
