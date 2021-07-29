@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.Common.Security;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 
 namespace AspCqrs.Application.Common.Behaviours
 {
@@ -41,10 +41,10 @@ namespace AspCqrs.Application.Common.Behaviours
 
                 if (authorizeAttributesWithRoles.Any())
                 {
-                    foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles?.Split(',').ToList()))
+                    foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',').ToList()))
                     {
                         var authorized = false;
-                        foreach (var role in roles ?? new List<string>())
+                        foreach (var role in roles)
                         {
                             var isInRole = await _identityService.IsInRoleAsync(_currentUserService.UserId, role.Trim());
                             if (isInRole)

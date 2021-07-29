@@ -4,11 +4,11 @@ using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Mapping;
 using AspCqrs.Application.Common.Models;
+using AspCqrs.Application.Common.Security;
 using AspCqrs.Domain.Entities;
 using AspCqrs.Domain.Events;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
