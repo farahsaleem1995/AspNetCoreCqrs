@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Options;
@@ -75,12 +77,22 @@ namespace AspCqrs.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddScoped<IDomainEventService, DomainEventService>();
-            
+
             services.AddScoped<IDateTimeService, DateTimeService>();
 
             services.AddScoped<IJwtService, JwtService>();
 
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
+
+            AddDbInitializers(services);
+        }
+
+        private static void AddDbInitializers(IServiceCollection services)
+        {
+            Assembly.GetExecutingAssembly().GetTypes()
+                .Where(type => type.IsClass && !type.IsAbstract && typeof(IDbInitializer).IsAssignableFrom(type))
+                .ToList()
+                .ForEach(type => services.AddScoped(type));
         }
     }
 }

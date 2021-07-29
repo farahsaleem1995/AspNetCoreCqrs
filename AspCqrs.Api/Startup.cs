@@ -2,6 +2,7 @@ using System;
 using AspCqrs.Api.OpenApi;
 using AspCqrs.Api.Services;
 using AspCqrs.Application;
+using AspCqrs.Application.Common;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -76,6 +77,8 @@ namespace AspCqrs.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspCqrs.Api v1"));
             }
+            
+            Seeder.Seed(app.ApplicationServices.CreateScope().ServiceProvider);
 
             app.UseHttpsRedirection();
 
