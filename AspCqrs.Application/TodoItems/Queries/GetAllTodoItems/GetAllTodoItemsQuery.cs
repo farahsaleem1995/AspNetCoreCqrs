@@ -1,24 +1,41 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Extensions;
 using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.Common.Models;
 using AspCqrs.Domain.Entities;
+using AspCqrs.Domain.Enums;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Queries.GetAllTodoItems
 {
-    public class GetAllTodoItemsQuery : IRequest<IEnumerable<TodoItemDto>>
+    public class GetAllTodoItemsQuery : IRequest<PaginatedList<TodoItemDto>>, IPagingQuery, ISortQuery
     {
+        public PriorityLevel? Priority { get; set; }
+
         public int Page { get; set; }
 
-        public byte PageSize { get; set; }
+        public int PageSize { get; set; }
+
+        public string SortBy { get; set; }
+
+        public bool IsSortAscending { get; set; }
     }
 
-    public class GetAllTodoItemsQueryHandler : IRequestHandler<GetAllTodoItemsQuery, IEnumerable<TodoItemDto>>
+    public class GetAllTodoItemsQueryHandler : IRequestHandler<GetAllTodoItemsQuery, PaginatedList<TodoItemDto>>
     {
+        private readonly IDictionary<string, Expression<Func<TodoItem, object>>> _sortDictionary =
+            new Dictionary<string, Expression<Func<TodoItem, object>>>
+            {
+                {"created".ToUpper(), item => item.Created},
+                {"title".ToUpper(), item => item.Title},
+            };
+
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
@@ -28,17 +45,16 @@ namespace AspCqrs.Application.TodoItems.Queries.GetAllTodoItems
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TodoItemDto>> Handle(GetAllTodoItemsQuery request,
+        public async Task<PaginatedList<TodoItemDto>> Handle(GetAllTodoItemsQuery request,
             CancellationToken cancellationToken)
         {
             var todoItems = await _dbContext.TodoItems
                 .Include(t => t.User)
-                .OrderBy(t => t.Created)
-                .Skip(request.Page < 1 ? 1 : (request.Page - 1) * (request.PageSize < 1 ? 10 : request.PageSize))
-                .Take(request.PageSize < 1 ? 10 : request.PageSize)
-                .ToListAsync(cancellationToken);
+                .Filter<GetAllTodoItemQueryFilter, TodoItem, GetAllTodoItemsQuery>(request)
+                .Sort(_sortDictionary, request)
+                .ToPaginatedListAsync(request, cancellationToken);
 
-            return _mapper.Map<IEnumerable<TodoItem>, IEnumerable<TodoItemDto>>(todoItems);
+            return _mapper.Map<PaginatedList<TodoItem>, PaginatedList<TodoItemDto>>(todoItems);
         }
     }
 }

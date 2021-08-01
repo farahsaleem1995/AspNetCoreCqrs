@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Commands.CreateTodoItem
 {
-    [Authorize]
+    [Authorize(Roles = Role.SuperAdmin)]
     public class CreateTodoItemCommand : IRequest<int>, IMapTo<TodoItem>
     {
         public string Title { get; set; }

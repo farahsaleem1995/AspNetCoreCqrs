@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using AspCqrs.Application.Common.Models;
 using AutoMapper;
 
 namespace AspCqrs.Application.Common.Mapping
@@ -9,6 +10,8 @@ namespace AspCqrs.Application.Common.Mapping
     {
         public MappingProfile()
         {
+            CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>));
+
             ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
