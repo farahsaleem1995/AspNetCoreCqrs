@@ -24,5 +24,13 @@ namespace AspCqrs.Application.Common.Models
         {
             return new Result(false, errors);
         }
+
+        public static Result Failure(string errorKey, string errorMessage)
+        {
+            return new Result(false, new Dictionary<string, string[]>
+            {
+                {errorKey, new[] {errorMessage}}
+            });
+        }
     }
 }

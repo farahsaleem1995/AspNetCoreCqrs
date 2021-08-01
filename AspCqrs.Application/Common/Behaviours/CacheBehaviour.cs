@@ -7,20 +7,16 @@ using System.Threading.Tasks;
 using AspCqrs.Application.Common.Cache;
 using AspCqrs.Application.Common.Interfaces;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace AspCqrs.Application.Common.Behaviours
 {
     public class CacheBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ICacheService _cacheService;
-        private readonly ILogger<CacheBehaviour<TRequest, TResponse>> _logger;
 
-        public CacheBehaviour(ICacheService cacheService,
-            ILogger<CacheBehaviour<TRequest, TResponse>> logger)
+        public CacheBehaviour(ICacheService cacheService)
         {
             _cacheService = cacheService;
-            _logger = logger;
         }
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
@@ -29,34 +25,16 @@ namespace AspCqrs.Application.Common.Behaviours
             var cachedAttributes = request.GetType().GetCustomAttribute<CachedAttribute>();
 
             if (cachedAttributes == null) return await next();
-            
+
             var cacheField = GetCacheFieldFromRequest(request);
 
-            try
-            {
-                return await _cacheService.GetAsync<TResponse>(cachedAttributes.Key, cacheField);
-            }
-            catch (Exception e)
-            {
-                var requestName = typeof(TRequest).Name;
-                    
-                _logger.LogWarning(e, "Failed to Get Data from Cache Memory for Request {Name} {@Request}",
-                    requestName, request);
-            }
+            var (result, cachedData) = await _cacheService.GetAsync<TResponse>(cachedAttributes.Key, cacheField);
+
+            if (result.Succeeded) return cachedData;
 
             var response = await next();
-            
-            try
-            {
-                await _cacheService.SetAsync(cachedAttributes.Key, cacheField, response, TimeSpan.FromMinutes(10));
-            }
-            catch (Exception e)
-            {
-                var requestName = typeof(TRequest).Name;
-                    
-                _logger.LogWarning(e, "Failed to Set Data to Cache Memory for Request {Name} {@Request}",
-                    requestName, request);
-            }
+
+            await _cacheService.SetAsync(cachedAttributes.Key, cacheField, response, TimeSpan.FromMinutes(10));
 
             return await next();
         }

@@ -1,20 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Models;
 
 namespace AspCqrs.Application.Common.Interfaces
 {
     public interface ICacheService
     {
-        Task<T> GetAsync<T>(string key);
+        Task<(Result, T)> GetAsync<T>(string key);
         
-        Task SetAsync<T>(string key, T value, TimeSpan? expiry = null);
+        Task<Result> SetAsync<T>(string key, T value, TimeSpan? expiry = null);
 
-        Task<T> GetAsync<T>(string key, string field);
+        Task<(Result, T)> GetAsync<T>(string key, string field);
 
-        Task SetAsync<T>(string key, string field, T value, TimeSpan? expiry = null);
+        Task<Result> SetAsync<T>(string key, string field, T value, TimeSpan? expiry = null);
         
-        Task RemoveAsync(string key);
+        Task<Result> RemoveAsync(string key);
 
-        Task SetExpiryAsync(string key, TimeSpan expiry);
+        Task<Result> SetExpiryAsync(string key, TimeSpan expiry);
     }
 }
