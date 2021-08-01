@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AspCqrs.Application.Common.Attributes;
+using AspCqrs.Application.Common.Cache;
 using AspCqrs.Application.Common.Extensions;
 using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.Common.Models;
@@ -14,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspCqrs.Application.TodoItems.Queries.GetAllTodoItems
 {
+    [Cached(TodoItemCacheKey.TodoItems)]
     public class GetAllTodoItemsQuery : IRequest<PaginatedList<TodoItemDto>>, IPagingQuery, ISortQuery
     {
         public PriorityLevel? Priority { get; set; }

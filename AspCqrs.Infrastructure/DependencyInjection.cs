@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace AspCqrs.Infrastructure
 {
@@ -85,6 +86,8 @@ namespace AspCqrs.Infrastructure
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
 
             AddDbInitializers(services);
+            
+            AddRedis(services, configuration);
         }
 
         private static void AddDbInitializers(IServiceCollection services)
@@ -93,6 +96,28 @@ namespace AspCqrs.Infrastructure
                 .Where(type => type.IsClass && !type.IsAbstract && typeof(IDbInitializer).IsAssignableFrom(type))
                 .ToList()
                 .ForEach(type => services.AddScoped(type));
+        }
+
+        private static void AddRedis(IServiceCollection services, IConfiguration configuration)
+        {
+            var redisSettings = new RedisSettings();
+            configuration.GetSection("RedisSettings").Bind(redisSettings);
+
+            services.Configure<RedisSettings>(configuration.GetSection(RedisSettings.Section));
+            
+            services.AddSingleton<IConnectionMultiplexer>(provider =>
+                ConnectionMultiplexer.Connect(new ConfigurationOptions
+                {
+                    Password = redisSettings.Password,
+                    AllowAdmin = redisSettings.AllowAdmin,
+                    Ssl = redisSettings.Ssl,
+                    ConnectTimeout = redisSettings.ConnectTimeout,
+                    ConnectRetry = redisSettings.ConnectRetry,
+                    AbortOnConnectFail = redisSettings.AbortOnConnectFail,
+                    EndPoints = {redisSettings.Connection}
+                }));
+
+            services.AddSingleton<ICacheService, RedisCacheService>();
         }
     }
 }
