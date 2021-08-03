@@ -1,9 +1,11 @@
 using System;
+using AspCqrs.Api.Hubs;
 using AspCqrs.Api.OpenApi;
 using AspCqrs.Api.Services;
 using AspCqrs.Application;
 using AspCqrs.Application.Common;
 using AspCqrs.Application.Common.Interfaces;
+using AspCqrs.Application.TodoItems;
 using AspCqrs.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -61,11 +63,15 @@ namespace AspCqrs.Api
                 });
             });
 
+            services.AddSignalR();
+
             services.AddInfrastructure(Configuration);
             
             services.AddApplication();
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+            services.AddScoped<IStreamService<TodoItemDto>, TodoItemStreamService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,6 +98,8 @@ namespace AspCqrs.Api
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+
+                endpoints.MapHub<TodoItemHub>("hubs/TodoItems");
             });
         }
     }
