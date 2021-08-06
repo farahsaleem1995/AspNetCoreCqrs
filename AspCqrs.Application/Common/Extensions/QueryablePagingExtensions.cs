@@ -12,7 +12,7 @@ namespace AspCqrs.Application.Common.Extensions
         public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this IQueryable<T> queryable, IPagingQuery pagingQuery, CancellationToken cancellationToken = default(CancellationToken))
         {
             var take = pagingQuery.PageSize == 0 ? 10 : pagingQuery.PageSize;
-            var skip = pagingQuery.Page > 0 ? (pagingQuery.Page - 1) * take : 1;
+            var skip = pagingQuery.Page > 0 ? (pagingQuery.Page - 1) * take : 0;
 
             return new PaginatedList<T>
             {
