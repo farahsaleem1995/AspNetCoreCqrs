@@ -3,19 +3,43 @@ using System.Threading.Tasks;
 using AspCqrs.Api.Hubs;
 using AspCqrs.Api.Hubs.Interfaces;
 using AspCqrs.Application.Common.Enums;
+using AspCqrs.Application.Common.Interfaces;
 using AspCqrs.Application.TodoItems;
 using Microsoft.AspNetCore.SignalR;
 
 namespace AspCqrs.Api.Services
 {
-    public class TodoItemStreamService : StreamServiceBase<TodoItemHub, ITodoItemHub, TodoItemDto>
+    public class TodoItemStreamService : IStreamService<TodoItemDto>
     {
+        private readonly IHubContext<TodoItemHub, ITodoItemHub> _hubContext;
+
         public TodoItemStreamService(IHubContext<TodoItemHub, ITodoItemHub> hubContext)
-            : base(hubContext)
         {
+            _hubContext = hubContext;
+        }
+        
+        public async Task NotifyUser(string userId, StreamChange change, TodoItemDto data)
+        {
+            var client = _hubContext.Clients.User(userId);
+
+            await Notify(client, change, data);
         }
 
-        protected override async Task Notify(ITodoItemHub client, StreamChange change, TodoItemDto data)
+        public async Task NotifyGroup(string group, StreamChange change, TodoItemDto data)
+        {
+            var client = _hubContext.Clients.Group(group);
+            
+            await Notify(client, change, data);
+        }
+
+        public async Task NotifyAll(StreamChange change, TodoItemDto data)
+        {
+            var client = _hubContext.Clients.All;
+            
+            await Notify(client, change, data);
+        }
+
+        private static async Task Notify(ITodoItemHub client, StreamChange change, TodoItemDto data)
         {
             switch (change)
             {
