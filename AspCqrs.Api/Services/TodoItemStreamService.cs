@@ -18,21 +18,21 @@ namespace AspCqrs.Api.Services
             _hubContext = hubContext;
         }
         
-        public async Task NotifyUser(string userId, StreamChange change, TodoItemDto data)
+        public async Task SendToUserAsync(string userId, StreamChange change, TodoItemDto data)
         {
             var client = _hubContext.Clients.User(userId);
 
             await Notify(client, change, data);
         }
 
-        public async Task NotifyGroup(string group, StreamChange change, TodoItemDto data)
+        public async Task SendToGroupAsync(string group, StreamChange change, TodoItemDto data)
         {
             var client = _hubContext.Clients.Group(group);
             
             await Notify(client, change, data);
         }
 
-        public async Task NotifyAll(StreamChange change, TodoItemDto data)
+        public async Task SendToAllAsync(StreamChange change, TodoItemDto data)
         {
             var client = _hubContext.Clients.All;
             

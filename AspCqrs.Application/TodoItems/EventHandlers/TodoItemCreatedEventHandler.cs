@@ -37,7 +37,7 @@ namespace AspCqrs.Application.TodoItems.EventHandlers
 
             var data = _mapper.Map<TodoItem, TodoItemDto>(domainEvent.TodoItem);
             
-            await _streamService.NotifyAll(StreamChange.Add, data);
+            await _streamService.SendToAllAsync(StreamChange.Add, data);
         }
     }
 }
