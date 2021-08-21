@@ -22,19 +22,25 @@ namespace AspCqrs.Application.Common.Behaviours
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
-            var cachedAttributes = request.GetType().GetCustomAttribute<CachedAttribute>();
+            var cachedAttribute = request.GetType().GetCustomAttribute<CachedAttribute>();
 
-            if (cachedAttributes == null) return await next();
+            if (cachedAttribute == null) return await next();
 
             var cacheField = GetCacheFieldFromRequest(request);
 
-            var (result, cachedData) = await _cacheService.GetAsync<TResponse>(cachedAttributes.Key, cacheField);
+            var isExist = await _cacheService.IsExistAsync(cachedAttribute.Key, cacheField);
 
-            if (result.Succeeded) return cachedData;
+
+            if (isExist)
+            {
+                var (result, cachedData) = await _cacheService.GetAsync<TResponse>(cachedAttribute.Key, cacheField);
+                
+                if (result) return cachedData;
+            }
 
             var response = await next();
 
-            await _cacheService.SetAsync(cachedAttributes.Key, cacheField, response, TimeSpan.FromMinutes(10));
+            await _cacheService.SetAsync(cachedAttribute.Key, cacheField, response, TimeSpan.FromMinutes(10));
 
             return await next();
         }
