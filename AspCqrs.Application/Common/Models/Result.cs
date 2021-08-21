@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AspCqrs.Application.Common.Models
 {
@@ -25,12 +24,22 @@ namespace AspCqrs.Application.Common.Models
             return new Result(false, errors);
         }
 
-        public static Result Failure(string errorKey, string errorMessage)
+        public static Result Failure(string key, string[] errors)
         {
             return new Result(false, new Dictionary<string, string[]>
-            {
-                {errorKey, new[] {errorMessage}}
-            });
+                {
+                    {key, errors}
+                }
+            );
+        }
+        
+        public static Result Failure(string key, string error)
+        {
+            return new Result(false, new Dictionary<string, string[]>
+                {
+                    {key, new[] {error}}
+                }
+            );
         }
     }
 }

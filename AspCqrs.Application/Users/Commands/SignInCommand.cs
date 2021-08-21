@@ -1,6 +1,6 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using MediatR;
 
@@ -28,7 +28,7 @@ namespace AspCqrs.Application.Users.Commands
         {
             var (signInResult, userId, roles) = await _identityService.SignInAsync(request.UserName, request.Password);
 
-            if (!signInResult.Succeeded) throw new UnauthorizedRequestException(signInResult.Errors);
+            if (!signInResult.Succeeded) throw new UnauthorizedAccessException("Username and password does not match");
 
             var (accessToken, refreshToken) =
                 await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);

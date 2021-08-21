@@ -10,7 +10,7 @@ namespace AspCqrs.Infrastructure.Identity
         {
             return result.Succeeded
                 ? Result.Success()
-                : Result.Failure(result.Errors.ToDictionary(x => x.Code, x => new[] {x.Description}));
+                : Result.Failure(result.Errors.ToDictionary(e => e.Code, e => new[] {e.Description}));
         }
     }
 }

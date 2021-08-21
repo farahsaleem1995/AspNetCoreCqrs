@@ -11,13 +11,13 @@ namespace AspCqrs.Infrastructure.Identity
             var errors = new Dictionary<string, string[]>();
 
             if (result.IsLockedOut)
-                errors.Add("UserIsLockedOut", new[] {"User is locked out currently."});
+                errors.Add("LockedOut", new[] {"User is locked out currently."});
 
             if (result.IsNotAllowed)
-                errors.Add("IsNotAllowed", new[] {"User is not allowed to login."});
+                errors.Add("NotAllowed", new[] {"User is not allowed to login."});
 
             if (result.RequiresTwoFactor)
-                errors.Add("RequiresTwoFactor", new[] {"Two factor authentication is required.."});
+                errors.Add("RequiresTwoFactor", new[] {"Two factor authentication is required."});
 
             return result.Succeeded
                 ? Result.Success()

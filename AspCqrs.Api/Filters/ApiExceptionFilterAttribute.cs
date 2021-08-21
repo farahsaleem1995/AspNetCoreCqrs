@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AspCqrs.Api.Models;
 using AspCqrs.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +18,8 @@ namespace AspCqrs.Api.Filters
             {
                 {typeof(ValidationException), HandleValidationException},
                 {typeof(NotFoundException), HandleNotFoundException},
-                {typeof(FailedRequestException), HandleFailedRequestException},
-                {typeof(UnauthorizedRequestException), HandleUnauthorizedRequestException},
-                {typeof(ForbiddenRequestException), HandleForbiddenRequestException},
+                {typeof(UnauthorizedAccessException), HandleUnauthorizedRequestException},
+                {typeof(ForbiddenAccessException), HandleForbiddenRequestException},
             };
         }
 
@@ -54,13 +52,13 @@ namespace AspCqrs.Api.Filters
         private static void HandleValidationException(ExceptionContext context)
         {
             var exception = context.Exception as ValidationException;
-
-            context.Result = new BadRequestObjectResult(new ApiResponse<object>
+            
+            var details = new ValidationProblemDetails(exception?.Errors)
             {
-                Succeeded = false,
-                Errors = exception?.Errors,
-                Data = null
-            });
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+            };
+
+            context.Result = new BadRequestObjectResult(details);
 
             context.ExceptionHandled = true;
         }
@@ -72,14 +70,7 @@ namespace AspCqrs.Api.Filters
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             };
 
-            var result = new ApiResponse<object>
-            {
-                Succeeded = false,
-                Errors = details.Errors,
-                Data = null
-            };
-
-            context.Result = new BadRequestObjectResult(result);
+            context.Result = new BadRequestObjectResult(details);
 
             context.ExceptionHandled = true;
         }
@@ -88,44 +79,28 @@ namespace AspCqrs.Api.Filters
         {
             var exception = context.Exception as NotFoundException;
 
-            context.Result = new NotFoundObjectResult(new ApiResponse<object>
+            var details = new ProblemDetails()
             {
-                Succeeded = false,
-                Errors = new Dictionary<string, string[]>
-                {
-                    {"SourceNotFound", new[] {exception?.Message}}
-                },
-                Data = null
-            });
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+                Title = "The specified resource was not found.",
+                Detail = exception?.Message
+            };
 
-            context.ExceptionHandled = true;
-        }
-        
-        private static void HandleFailedRequestException(ExceptionContext context)
-        {
-            var exception = context.Exception as FailedRequestException;
-
-            context.Result = new BadRequestObjectResult(new ApiResponse<object>
-            {
-                Succeeded = false,
-                Errors = exception?.Errors,
-                Data = null
-            });
+            context.Result = new NotFoundObjectResult(details);
 
             context.ExceptionHandled = true;
         }
 
         private static void HandleUnauthorizedRequestException(ExceptionContext context)
         {
-            var exception = context.Exception as UnauthorizedRequestException;
-            var result = new ApiResponse<object>
+            var details = new ProblemDetails
             {
-                Succeeded = false,
-                Errors = exception?.Errors,
-                Data = null
+                Status = StatusCodes.Status401Unauthorized,
+                Title = context.Exception.Message,
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
             };
 
-            context.Result = new ObjectResult(result)
+            context.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status401Unauthorized
             };
@@ -135,24 +110,31 @@ namespace AspCqrs.Api.Filters
 
         private static void HandleForbiddenRequestException(ExceptionContext context)
         {
-            context.Result = new ForbidResult();
+            var details = new ProblemDetails
+            {
+                Status = StatusCodes.Status403Forbidden,
+                Title = "Forbidden",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
+            };
+
+            context.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
 
             context.ExceptionHandled = true;
         }
 
         private static void HandleUnknownException(ExceptionContext context)
         {
-            var result = new ApiResponse<object>
+            var details = new ProblemDetails
             {
-                Succeeded = false,
-                Errors = new Dictionary<string, string[]>
-                {
-                    {"Unknown", new[] {"An error occurred while processing your request."}}
-                },
-                Data = null
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An error occurred while processing your request.",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
             };
 
-            context.Result = new ObjectResult(result)
+            context.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             };

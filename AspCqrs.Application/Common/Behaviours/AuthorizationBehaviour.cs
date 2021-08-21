@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -33,7 +33,7 @@ namespace AspCqrs.Application.Common.Behaviours
                 // Must be authenticated user
                 if (_currentUserService.UserId == null)
                 {
-                    throw new UnauthorizedRequestException();
+                    throw new UnauthorizedAccessException();
                 }
                 
                 // Role-based authorization
@@ -57,7 +57,7 @@ namespace AspCqrs.Application.Common.Behaviours
                         // Must be a member of at least one role in roles
                         if (!authorized)
                         {
-                            throw new ForbiddenRequestException();
+                            throw new ForbiddenAccessException();
                         }
                     }
                 }
@@ -72,7 +72,7 @@ namespace AspCqrs.Application.Common.Behaviours
 
                         if (!authorized)
                         {
-                            throw new ForbiddenRequestException();
+                            throw new ForbiddenAccessException();
                         }
                     }
                 }
