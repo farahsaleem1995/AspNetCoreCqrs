@@ -16,6 +16,7 @@ namespace AspCqrs.Api.Filters
             // Register known exception types and handlers.
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
+                {typeof(CommonException), HandleCommonException},
                 {typeof(ValidationException), HandleValidationException},
                 {typeof(NotFoundException), HandleNotFoundException},
                 {typeof(UnauthorizedAccessException), HandleUnauthorizedRequestException},
@@ -49,6 +50,22 @@ namespace AspCqrs.Api.Filters
             HandleUnknownException(context);
         }
 
+        private static void HandleCommonException(ExceptionContext context)
+        {
+            var exception = context.Exception as CommonException;
+            
+            var details = new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Title = "Invalid Request",
+                Detail = exception?.Message
+            };
+
+            context.Result = new BadRequestObjectResult(details);
+
+            context.ExceptionHandled = true;
+        }
+        
         private static void HandleValidationException(ExceptionContext context)
         {
             var exception = context.Exception as ValidationException;
@@ -96,8 +113,9 @@ namespace AspCqrs.Api.Filters
             var details = new ProblemDetails
             {
                 Status = StatusCodes.Status401Unauthorized,
-                Title = context.Exception.Message,
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+                Title = "Unauthorized",
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                Detail = context.Exception.Message,
             };
 
             context.Result = new ObjectResult(details)

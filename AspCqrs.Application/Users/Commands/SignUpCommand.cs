@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AspCqrs.Application.Common.Exceptions;
@@ -29,7 +30,7 @@ namespace AspCqrs.Application.Users.Commands
             var (creatResult, userId, roles) =
                 await _identityService.CreateUserAsync(request.UserName, request.Password);
 
-            if (!creatResult.Succeeded) throw new ValidationException(creatResult.Errors);
+            if (!creatResult.Succeeded) throw new CommonException(creatResult.Errors.FirstOrDefault());
 
             var (accessToken, refreshToken) =
                 await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);

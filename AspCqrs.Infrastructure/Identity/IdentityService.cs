@@ -71,12 +71,12 @@ namespace AspCqrs.Infrastructure.Identity
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
 
             if (user == null)
-                return (Result.Failure("SignIn", "Username and password does not match."), null, null);
+                return (Result.Failure(new[] {"Username and password does not match."}), null, null);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 
             if (!result.Succeeded)
-                return (Result.Failure("SignIn", "Username and password does not match."), null, null);
+                return (Result.Failure(new[] {"Username and password does not match."}), null, null);
 
             var userRoles = await _userManager.GetRolesAsync(user);
 

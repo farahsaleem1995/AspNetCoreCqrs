@@ -21,12 +21,6 @@ namespace AspCqrs.Application.Common.Exceptions
                 .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
         }
 
-        public ValidationException(IDictionary<string, string[]> errors)
-            : this()
-        {
-            Errors = errors;
-        }
-
         public IDictionary<string, string[]> Errors { get; }
     }
 }
