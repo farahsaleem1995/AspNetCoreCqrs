@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using AspCqrs.Application.Users.Commands;
+using AspCqrs.Application.Users.Commands.SignInCommand;
+using AspCqrs.Application.Users.Commands.SignUpCommand;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspCqrs.Api.Controllers

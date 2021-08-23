@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AspCqrs.Application.Common.Interfaces;
 using MediatR;
 
-namespace AspCqrs.Application.Users.Commands
+namespace AspCqrs.Application.Users.Commands.SignInCommand
 {
     public class SignInCommand : IRequest<TokenDto>
     {

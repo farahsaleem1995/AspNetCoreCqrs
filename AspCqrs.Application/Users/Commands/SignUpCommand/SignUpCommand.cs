@@ -5,7 +5,7 @@ using AspCqrs.Application.Common.Exceptions;
 using AspCqrs.Application.Common.Interfaces;
 using MediatR;
 
-namespace AspCqrs.Application.Users.Commands
+namespace AspCqrs.Application.Users.Commands.SignUpCommand
 {
     public class SignUpCommand : IRequest<TokenDto>
     {
