@@ -16,7 +16,7 @@ namespace AspCqrs.Api.Filters
             // Register known exception types and handlers.
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
-                {typeof(CommonException), HandleCommonException},
+                {typeof(ApplicationException), HandleApplicationException},
                 {typeof(ValidationException), HandleValidationException},
                 {typeof(NotFoundException), HandleNotFoundException},
                 {typeof(UnauthorizedAccessException), HandleUnauthorizedRequestException},
@@ -50,9 +50,9 @@ namespace AspCqrs.Api.Filters
             HandleUnknownException(context);
         }
 
-        private static void HandleCommonException(ExceptionContext context)
+        private static void HandleApplicationException(ExceptionContext context)
         {
-            var exception = context.Exception as CommonException;
+            var exception = context.Exception as ApplicationException;
             
             var details = new ProblemDetails
             {

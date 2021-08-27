@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace AspCqrs.Application.Users.Commands.SignUpCommand
             var (creatResult, userId, roles) =
                 await _identityService.CreateUserAsync(request.UserName, request.Password);
 
-            if (!creatResult.Succeeded) throw new CommonException(creatResult.Errors.FirstOrDefault());
+            if (!creatResult.Succeeded) throw new ApplicationException(creatResult.Errors.FirstOrDefault());
 
             var (accessToken, refreshToken) =
                 await _jwtService.Generate(userId, request.UserName, roles, cancellationToken);
